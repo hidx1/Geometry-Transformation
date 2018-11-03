@@ -1,0 +1,165 @@
+import pygame
+import numpy
+from pygame.locals import *
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+colors = (
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (0,1,0),
+    (1,1,1),
+    (0,1,1),
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (1,0,0),
+    (1,1,1),
+    (0,1,1),
+    )
+verticies = (
+    (1, -1, -1),
+    (1, 1, -1),
+    (-1, 1, -1),
+    (-1, -1, -1),
+    (1, -1, 1),
+    (1, 1, 1),
+    (-1, -1, 1),
+    (-1, 1, 1)
+    )
+
+edges = (
+    (0,1),
+    (0,3),
+    (0,4),
+    (2,1),
+    (2,3),
+    (2,7),
+    (6,3),
+    (6,4),
+    (6,7),
+    (5,1),
+    (5,4),
+    (5,7)
+    )
+
+surfaces = (
+    (0,1,2,3),
+    (3,2,7,6),
+    (6,7,5,4),
+    (4,5,1,0),
+    (1,5,7,2),
+    (4,0,3,6)
+    )
+
+def Cube():
+    glBegin(GL_QUADS)
+    for surface in surfaces:
+        x = 0
+        for vertex in surface:
+            x+=1
+            glColor3fv(colors[x])
+            glVertex3fv(verticies[vertex])
+    glEnd()
+
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(verticies[vertex])
+    
+def Axis():
+    glEnd()
+    glBegin(GL_LINES)
+    glColor3f(1, 0, 0)
+    glVertex3f(-50, 0, 0)
+    glVertex3f(50, 0, 0)
+
+    glColor3f(0, 1, 0)
+    glVertex3f(0, -50, 0)
+    glVertex3f(0, 50, 0)
+
+    glColor3f(0, 0, 1)
+    glVertex3f(0, 0, -50)
+    glVertex3f(0, 0, 50)
+    glEnd()
+
+def IdentityMat44(): return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')
+
+view_mat = IdentityMat44()
+
+pygame.init()
+display = (800,600)
+pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+
+tx = 0
+ty = 0
+tz = 0
+ry = 0
+rx = 0
+glMatrixMode(GL_PROJECTION)
+gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+
+view_mat = IdentityMat44()
+#view_mat[0,0]=5
+glMatrixMode(GL_MODELVIEW)
+glLoadIdentity()
+glTranslatef(0, 0, -15)
+print(view_mat)
+glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
+print(view_mat)
+glLoadIdentity()
+x=1
+while True:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                quit()
+            if   event.key == pygame.K_a:     tx =  0.1
+            elif event.key == pygame.K_d:     tx = -0.1
+            elif event.key == pygame.K_q:     ty = -0.1
+            elif event.key == pygame.K_e:     ty =  0.1
+            elif event.key == pygame.K_w:     tz =  0.1
+            elif event.key == pygame.K_s:     tz = -0.1
+            elif event.key == pygame.K_RIGHT: ry =  1.0
+            elif event.key == pygame.K_LEFT:  ry = -1.0
+            elif event.key == pygame.K_UP:    rx = -1.0
+            elif event.key == pygame.K_DOWN:  rx =  1.0
+        elif event.type == pygame.KEYUP: 
+            if   event.key == pygame.K_a     and tx > 0: tx = 0
+            elif event.key == pygame.K_d     and tx < 0: tx = 0
+            elif event.key == pygame.K_q     and ty < 0: ty = 0
+            elif event.key == pygame.K_e     and ty > 0: ty = 0
+            elif event.key == pygame.K_w     and tz > 0: tz = 0
+            elif event.key == pygame.K_s     and tz < 0: tz = 0
+            elif event.key == pygame.K_RIGHT and ry > 0: ry = 0.0
+            elif event.key == pygame.K_LEFT  and ry < 0: ry = 0.0
+            elif event.key == pygame.K_UP    and rx < 0: rx = 0.0
+            elif event.key == pygame.K_DOWN  and rx > 0: rx = 0.0
+
+    glPushMatrix()
+    glLoadIdentity()
+    glTranslatef(tx,ty,tz)
+    glRotatef(ry, 0, 1, 0)
+    glRotatef(rx, 1, 0, 0)
+    glMultMatrixf(view_mat)
+    #if x==1:
+        #print(view_mat)
+    glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
+    #if x==1:
+        #print(view_mat)
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    Cube()
+    Axis()
+    glPopMatrix()
+
+    pygame.display.flip()
+    pygame.time.wait(10)
+    x+=1
