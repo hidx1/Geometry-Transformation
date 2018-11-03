@@ -1,28 +1,30 @@
-from OpenGL.GL import*
-from OpenGL.GLUT import*
-from OpenGL.GLU import*
-import glfw
-import numpy as np
+import contextlib
+with contextlib.redirect_stdout(None):
+    import pygame
+import pygame
+import numpy
+import _thread
 import sys
 import time
+from pygame.locals import *
 
-# INTERFACE AWAL
-bintang = "***************************************************\n"
-welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
-msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
-def typing(str): #Simulated typing
-    for letter in str:
-        sys.stdout.write(letter)
-        sys.stdout.flush()
-        time.sleep(0.0075)
-typing(bintang)
-typing(welcome)
-typing(bintang)
-print(msg)
-pilihan = input("Mode yang ingin dijalankan (2D/3D): ") #Choose between 2D/3D
-while(not pilihan == "2D" and not pilihan == "3D"):
-    pilihan = input("Input salah. Pilih antara 2D/3D: ")
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
+colors = (
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (0,1,0),
+    (1,1,1),
+    (0,1,1),
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (1,0,0),
+    (1,1,1),
+    (0,1,1),
+    )
 verticies = (
     (1, -1, -1),
     (1, 1, -1),
@@ -49,41 +51,161 @@ edges = (
     (5,7)
     )
 
+surfaces = (
+    (0,1,2,3),
+    (3,2,7,6),
+    (6,7,5,4),
+    (4,5,1,0),
+    (1,5,7,2),
+    (4,0,3,6)
+    )
+
 def Cube():
+    glBegin(GL_QUADS)
+    for surface in surfaces:
+        x = 0
+        for vertex in surface:
+            x+=1
+            glColor3fv(colors[x])
+            glVertex3fv(verticies[vertex])
+    glEnd()
+
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
             glVertex3fv(verticies[vertex])
+
+def Axis():
+    glEnd()
+    glBegin(GL_LINES)
+    glColor3f(1, 0, 0)
+    glVertex3f(-50, 0, 0)
+    glVertex3f(50, 0, 0)
+
+    glColor3f(0, 1, 0)
+    glVertex3f(0, -50, 0)
+    glVertex3f(0, 50, 0)
+
+    glColor3f(0, 0, 1)
+    glVertex3f(0, 0, -50)
+    glVertex3f(0, 0, 50)
     glEnd()
 
-# MAIN FUNCTION
-def main():
+def IdentityMat44():
+    return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')
 
-    #initialize GLFW
-    if not glfw.init():
-        return -1
+def threadedConsole():
+    command = input(">>> ")
+    if(command == "translate"):
+        print("Hey Tayo!")
 
-    #Create windows mode window
-    window = glfw.create_window(1024, 720, "Transformasi Geometri Objek " + str(pilihan), None, None)
 
-    if not window:
-        glfw.terminate()
-        return -1
+# --------------------- INTERFACE AWAL ---------------------------------------
+bintang = "***************************************************\n"
+welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
+msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
+def typing(str): #Simulated typing
+    for letter in str:
+        sys.stdout.write(letter)
+        sys.stdout.flush()
+        time.sleep(0.0075)
+typing(bintang)
+typing(welcome)
+typing(bintang)
+print(msg)
+pilihan = input("Mode yang ingin dijalankan (2D/3D): ") #Choose between 2D/3D
+while(not pilihan == "2D" and not pilihan == "3D"):
+    pilihan = input("Input salah. Pilih antara 2D/3D: ")
+print()
 
-    #Make GLFW window's context current
-    glfw.make_context_current(window)
+view_mat = IdentityMat44()
 
-    #Loop until window closes
-    while not glfw.window_should_close(window):
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+# --------------------- Pygame Window ---------------------------------------
+pygame.init()
+pygame.display.set_caption('Transformasi Geometri ' + str(pilihan))
+display = (800,600)
+screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+command = ""
+console = ""
 
-        #Poll and process events
-        glfw.poll_events()
-        #Swap front and back buffers
-        glfw.swap_buffers(window)
+consoling = False
 
-    #Terminate GLFW window
-    glfw.terminate()
+tx = 0
+ty = 0
+tz = 0
+ry = 0
+rx = 0
+glMatrixMode(GL_PROJECTION)
+gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
-if __name__ == "__main__":
-    main()
+#view_mat = IdentityMat44()
+#view_mat[0,0]=5
+glMatrixMode(GL_MODELVIEW)
+glLoadIdentity()
+glTranslatef(0, 0, -15)
+#print(view_mat)
+glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
+#print(view_mat)
+glLoadIdentity()
+x=1
+
+while True:
+    events = pygame.event.get()
+    for event in events:
+        if not consoling:
+            _thread.start_new_thread(threadedConsole,())
+            consoling = True
+
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                quit()
+
+            if event.key == pygame.K_c: #ketik c untuk minta input di shell
+                consoling = False;
+
+            if   event.key == pygame.K_a:     tx =  0.1
+            elif event.key == pygame.K_d:     tx = -0.1
+            elif event.key == pygame.K_q:     ty = -0.1
+            elif event.key == pygame.K_e:     ty =  0.1
+            elif event.key == pygame.K_w:     tz =  0.1
+            elif event.key == pygame.K_s:     tz = -0.1
+            elif event.key == pygame.K_RIGHT: ry =  1.0
+            elif event.key == pygame.K_LEFT:  ry = -1.0
+            elif event.key == pygame.K_UP:    rx = -1.0
+            elif event.key == pygame.K_DOWN:  rx =  1.0
+        elif event.type == pygame.KEYUP:
+            if   event.key == pygame.K_a     and tx > 0: tx = 0
+            elif event.key == pygame.K_d     and tx < 0: tx = 0
+            elif event.key == pygame.K_q     and ty < 0: ty = 0
+            elif event.key == pygame.K_e     and ty > 0: ty = 0
+            elif event.key == pygame.K_w     and tz > 0: tz = 0
+            elif event.key == pygame.K_s     and tz < 0: tz = 0
+            elif event.key == pygame.K_RIGHT and ry > 0: ry = 0.0
+            elif event.key == pygame.K_LEFT  and ry < 0: ry = 0.0
+            elif event.key == pygame.K_UP    and rx < 0: rx = 0.0
+            elif event.key == pygame.K_DOWN  and rx > 0: rx = 0.0
+
+    glPushMatrix()
+    glLoadIdentity()
+    glTranslatef(tx,ty,tz)
+    glRotatef(ry, 0, 1, 0)
+    glRotatef(rx, 1, 0, 0)
+    glMultMatrixf(view_mat)
+    #if x==1:
+        #print(view_mat)
+    glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
+    #if x==1:
+        #print(view_mat)
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    Cube()
+    Axis()
+    glPopMatrix()
+
+    pygame.display.flip()
+    pygame.time.wait(10)
+    x+=1
