@@ -1,15 +1,16 @@
 import contextlib
 with contextlib.redirect_stdout(None):
     import pygame
-import pygame
 import numpy
 import _thread
 import sys
 import time
+import queue
 from pygame.locals import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
+q = queue.Queue()
 
 colors = (
     (1,0,0),
@@ -94,11 +95,21 @@ def Axis():
 def IdentityMat44():
     return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')
 
-def threadedConsole():
-    command = input(">>> ")
-    if(command == "translate"):
-        print("Hey Tayo!")
+def threadedConsole(q):
+    global consoling
+    consoling = True
+    while True:
+        command = input(">>> ")
+        q.put(command)
 
+def CreateMatrix(pilihan, pasangan_point, matrix): #mengisi matrix
+    print("Masukkan nilai point:")
+    if(pilihan == "2D"):
+        for i in range(pasangan_point):
+            matrix[0][i], matrix[1][i] = input().split(',')
+    else:
+        for i in range(pasangan_point):
+            matrix[0][i], matrix[1][i], matrix[2][i] = input().split(',')
 
 # --------------------- INTERFACE AWAL ---------------------------------------
 bintang = "***************************************************\n"
@@ -118,6 +129,14 @@ while(not pilihan == "2D" and not pilihan == "3D"):
     pilihan = input("Input salah. Pilih antara 2D/3D: ")
 print()
 
+pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
+matrix = numpy.zeros((3, pasangan_point)) #Bentuk matrix 3 * pasangan_point
+CreateMatrix(pilihan, pasangan_point, matrix)
+print()
+print("Matrix yang dihasilkan: ")
+print(matrix)
+print()
+
 view_mat = IdentityMat44()
 
 # --------------------- Pygame Window ---------------------------------------
@@ -125,37 +144,45 @@ pygame.init()
 pygame.display.set_caption('Transformasi Geometri ' + str(pilihan))
 display = (800,600)
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
-command = ""
-console = ""
 
+glMatrixMode(GL_PROJECTION)
+gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+
+view_mat = IdentityMat44()
+glMatrixMode(GL_MODELVIEW)
+glLoadIdentity()
+glTranslatef(0, 0, -15)
+glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
+glLoadIdentity()
+
+aturan = 0
 consoling = False
-
 tx = 0
 ty = 0
 tz = 0
 ry = 0
 rx = 0
-glMatrixMode(GL_PROJECTION)
-gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-
-#view_mat = IdentityMat44()
-#view_mat[0,0]=5
-glMatrixMode(GL_MODELVIEW)
-glLoadIdentity()
-glTranslatef(0, 0, -15)
-#print(view_mat)
-glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
-#print(view_mat)
-glLoadIdentity()
-x=1
-
 while True:
+    command = ""
+    #Bagian command
+    if not q.empty():
+        command = q.get()
+
+    if command == "move":
+        glPushMatrix()
+        glLoadIdentity()
+        glTranslatef(0.1,ty,tz)
+        glMultMatrixf(view_mat)
+        glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        glPopMatrix()
+        #tx=0.1
+
+    if not consoling:
+            _thread.start_new_thread(threadedConsole,(q,))
+
     events = pygame.event.get()
     for event in events:
-        if not consoling:
-            _thread.start_new_thread(threadedConsole,())
-            consoling = True
-
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
@@ -164,9 +191,6 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
-
-            if event.key == pygame.K_c: #ketik c untuk minta input di shell
-                consoling = False;
 
             if   event.key == pygame.K_a:     tx =  0.1
             elif event.key == pygame.K_d:     tx = -0.1
@@ -196,11 +220,7 @@ while True:
     glRotatef(ry, 0, 1, 0)
     glRotatef(rx, 1, 0, 0)
     glMultMatrixf(view_mat)
-    #if x==1:
-        #print(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
-    #if x==1:
-        #print(view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
     Cube()
     Axis()
@@ -208,4 +228,3 @@ while True:
 
     pygame.display.flip()
     pygame.time.wait(10)
-    x+=1
