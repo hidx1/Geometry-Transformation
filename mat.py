@@ -8,7 +8,7 @@ def input_command():
     # Output berupa command, list of parameters
     # rtype: string, list
 
-    masukkan = input("Masukkan jenis transformation : ")
+    masukkan = input("Masukkan jenis transformasi : ")
     array = masukkan.strip().split(" ")
     array = list(filter(None, array))
 
