@@ -13,7 +13,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 q = queue.Queue()
-numpy.set_printoptions(suppress=True)
+numpy.set_printoptions(suppress=True) #prevent scientific notation
 
 colors = (
     (1,0,0),
@@ -30,16 +30,16 @@ colors = (
     (0,1,1),
     )
 
-verticies = (
-    (1, -1, -1),
-    (1, 1, -1),
-    (-1, 1, -1),
-    (-1, -1, -1),
-    (1, -1, 1),
-    (1, 1, 1),
-    (-1, -1, 1),
-    (-1, 1, 1)
-    )
+verticies = [
+    [1, -1, -1],
+    [1, 1, -1],
+    [-1, 1, -1],
+    [-1, -1, -1],
+    [1, -1, 1],
+    [1, 1, 1],
+    [-1, -1, 1],
+    [-1, 1, 1]
+    ]
 
 edges = (
     (0,1),
@@ -78,6 +78,8 @@ def Cube(): #Draw cube
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
+            #print(verticies[vertex])
+            # print(type(verticies[vertex]))
             glVertex3fv(verticies[vertex])
     glEnd()
 
@@ -96,6 +98,20 @@ def Axis(): #Draw x, y, z axes
     glVertex3f(0, 0, 50)
     glEnd()
 
+def Draw2D(matrix):
+    glBegin(GL_LINES)
+    glColor3f(1, 1, 1)
+    for i in range(0,len(matrix)):
+        #print(matrix[i % len(matrix)])
+        glVertex4fv(matrix[i % len(matrix)])
+        glVertex4fv(matrix[(i+1) % len(matrix)])
+    glEnd()
+    glBegin(GL_POLYGON)
+    glColor3f(0, 1, 0)
+    for i in range(0,len(matrix)):
+        glVertex4fv(matrix[i % len(matrix)])
+    glEnd()
+
 def IdentityMat44():
     return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')
 
@@ -106,11 +122,11 @@ def threadedConsole(q): #Thread to switch between pygame window and command shel
         command = input(">>> ").split(" ")
         q.put(command)
 
-def CreateMatrix(pasangan_point, matrix): #Fill matrix with user's input
+def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
     print("Masukkan nilai point:")
     for i in range(pasangan_point):
         matrix[i][0], matrix[i][1] = input().split(",")
-        matrix[i][3] = 1
+        matrix[i][3] = 1 #set w the part to be 1
 
 # --------------------- INTERFACE AWAL ---------------------------------------
 bintang = "***************************************************\n"
@@ -121,9 +137,9 @@ def typing(str): #Simulated typing
         sys.stdout.write(letter)
         sys.stdout.flush()
         time.sleep(0.0075)
-typing(bintang)
-typing(welcome)
-typing(bintang)
+#typing(bintang)
+#typing(welcome)
+#typing(bintang)
 print(msg)
 
 #Choose between 2D/3D
@@ -136,11 +152,11 @@ print()
 if(pilihan == "2D"):
     pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
     matrix = numpy.zeros((pasangan_point, 4)) #Bentuk matrix 3 * pasangan_point
-    CreateMatrix(pasangan_point, matrix)
+    CreateVertexMatrix(pasangan_point, matrix)
     print()
     print("Matrix yang dihasilkan: ")
     print(matrix)
-    print()
+    print(matrix[0])
 else:
     matrix = numpy.zeros((8, 4))
     matrix = numpy.matrix([[1, -1, -1, 1],
@@ -163,7 +179,7 @@ display = (800,600) #Create pygame window with 800 x 600 resolution
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
 glMatrixMode(GL_PROJECTION)
-gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+gluPerspective(45, (display[0]/display[1]), 0.1, 500.0)
 
 view_mat = IdentityMat44()
 glMatrixMode(GL_MODELVIEW)
@@ -198,8 +214,9 @@ while True:
         glPopMatrix()
         #tx=0.1
     elif command[0] == "dilate":
-        k = int(command[1])
-        dilate(matrix_result, k)
+        k = float(command[1])
+        print("dilated")
+        matrix_result=dilate(matrix_result, k)
     elif command[0] == "rotate":
         deg = command[1]
         a = command[2]
@@ -285,9 +302,10 @@ while True:
     glMultMatrixf(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-    Axis()
-    Cube()
     #Axis()
+    # Cube()
+    Draw2D(matrix_result)
+    Axis()
     glPopMatrix()
 
     pygame.display.flip()
