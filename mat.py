@@ -2,6 +2,18 @@ import numpy
 import math
 #belum dikerjakan : reflect,custom
 
+def input_command():
+
+    # Function to parse input text
+    # Output berupa command, list of parameters
+    # rtype: string, list
+
+    masukkan = input("Masukkan jenis transformation : ")
+    array = masukkan.strip().split(" ")
+    array = list(filter(None, array))
+
+    return array[0], array[1:]
+
 def multiple(mat1, mat2):
     #untuk multiplikasi di 'rotate'
 
