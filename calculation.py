@@ -1,5 +1,6 @@
 import numpy
 import copy
+import sys
 
 def ConvertTo2D(matrix):
     matrix_result = numpy.zeros((len(matrix[:,0]), 2))
@@ -39,8 +40,8 @@ def reflect(matrix, dim, param):
         elif param == "y=-x":
             transform = numpy.array([[0,-1],
                                       [-1,0]])
-        elif param == "(%f,%f)":
-            print("dsaxcz")
+        else:
+            print("zczcda")
     elif dim == 3:
         print("sadas")
     matrix_temp = numpy.matmul(matrix_temp, transform)
@@ -111,5 +112,60 @@ def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
                                  [c,f,i]])
         return numpy.matmul(matrix, transform)
 
-def multiple(matrix, dim, n):
-    print("multiple")
+def multiple(matrix, dim, n, consoling):
+    sys.stdout.write("Masukkan " + str(n) + " command(s): ")
+    sys.stdout.flush()
+    for i in range(n):
+        command = input("Command " + str(i+1) + ": ").split(" ")
+        if command[0] == "translate":
+            dx = float(command[1])
+            dy = float(command[2])
+            if dim == 2:
+                dz = 0
+            else:
+                dz = float(command[3])
+            matrix = translate(matrix,dx,dy,dz)
+
+        elif command[0] == "dilate":
+            k = float(command[1])
+            matrix = dilate(matrix, k)
+
+        elif command[0] == "rotate":
+            deg = float(command[1])
+            a = float(command[2])
+            b = float(command[3])
+            matrix = rotate(matrix, deg, a, b)
+
+        elif command[0] == "reflect":
+            param = command[1]
+            matrix = reflect(matrix, dim, param)
+
+        elif command[0] == "shear":
+            param = command[1]
+            k = float(command[2])
+            matrix = shear(matrix, dim, param, k)
+
+        elif command[0] == "stretch":
+            param = command[1]
+            k = float(command[2])
+            matrix = stretch(matrix, dim, param, k)
+
+        elif command[0] == "custom":
+            a = float(command[1])
+            b = float(command[2])
+            c = float(command[3])
+            d = float(command[4])
+            if dim == 2:
+                e = 0
+                f = 0
+                g = 0
+                h = 0
+                i = 0
+            else:
+                e = float(command[5])
+                f = float(command[6])
+                g = float(command[7])
+                h = float(command[8])
+                i = float(command[9])
+            matrix = custom(matrix, dim, a, b, c, d, e, f, g, h, i)
+    return matrix
