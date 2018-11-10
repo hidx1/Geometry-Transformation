@@ -30,16 +30,16 @@ colors = (
     (0,1,1),
     )
 
-verticies = [
-    [1, -1, -1],
-    [1, 1, -1],
-    [-1, 1, -1],
-    [-1, -1, -1],
-    [1, -1, 1],
-    [1, 1, 1],
-    [-1, -1, 1],
-    [-1, 1, 1]
-    ]
+verticies = (
+    (1, -1, -1),
+    (1, 1, -1),
+    (-1, 1, -1),
+    (-1, -1, -1),
+    (1, -1, 1),
+    (1, 1, 1),
+    (-1, -1, 1),
+    (-1, 1, 1)
+    )
 
 edges = (
     (0,1),
@@ -78,8 +78,6 @@ def Cube(): #Draw cube
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
-            #print(verticies[vertex])
-            # print(type(verticies[vertex]))
             glVertex3fv(verticies[vertex])
     glEnd()
 
@@ -103,13 +101,13 @@ def Draw2D(matrix):
     glColor3f(1, 1, 1)
     for i in range(0,len(matrix)):
         #print(matrix[i % len(matrix)])
-        glVertex4fv(matrix[i % len(matrix)])
-        glVertex4fv(matrix[(i+1) % len(matrix)])
+        glVertex3fv(matrix[i % len(matrix)])
+        glVertex3fv(matrix[(i+1) % len(matrix)])
     glEnd()
     glBegin(GL_POLYGON)
     glColor3f(0, 1, 0)
     for i in range(0,len(matrix)):
-        glVertex4fv(matrix[i % len(matrix)])
+        glVertex3fv(matrix[i % len(matrix)])
     glEnd()
 
 def IdentityMat44():
@@ -125,10 +123,11 @@ def threadedConsole(q): #Thread to switch between pygame window and command shel
 def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
     print("Masukkan nilai point:")
     for i in range(pasangan_point):
-        matrix[i][0], matrix[i][1] = input().split(",")
-        matrix[i][3] = 1 #set w the part to be 1
+        matrix[i][0], matrix[i][1] = map(float, input().split(","))
 
 # --------------------- INTERFACE AWAL ---------------------------------------
+transform = numpy.array([[1.1,1.2],
+                          [1.3,1.4]])
 bintang = "***************************************************\n"
 welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
 msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
@@ -137,9 +136,9 @@ def typing(str): #Simulated typing
         sys.stdout.write(letter)
         sys.stdout.flush()
         time.sleep(0.0075)
-#typing(bintang)
-#typing(welcome)
-#typing(bintang)
+typing(bintang)
+typing(welcome)
+typing(bintang)
 print(msg)
 
 #Choose between 2D/3D
@@ -150,23 +149,24 @@ print()
 
 #Ask and create matrix based on user's input if choice is 2D
 if(pilihan == "2D"):
+    dim = 2
     pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
-    matrix = numpy.zeros((pasangan_point, 4)) #Bentuk matrix 3 * pasangan_point
+    matrix = numpy.zeros((pasangan_point, 3)) #Bentuk matrix 3 * pasangan_point
     CreateVertexMatrix(pasangan_point, matrix)
     print()
     print("Matrix yang dihasilkan: ")
     print(matrix)
-    print(matrix[0])
+    print()
 else:
-    matrix = numpy.zeros((8, 4))
-    matrix = numpy.matrix([[1, -1, -1, 1],
-                           [1, 1, -1, 1],
-                           [-1, 1, -1, 1],
-                           [-1, -1, -1, 1],
-                           [1, -1, 1, 1],
-                           [1, 1, 1, 1],
-                           [-1, -1, 1, 1],
-                           [-1, 1, 1, 1]])
+    dim = 3
+    matrix = numpy.array([[1, -1, -1],
+                           [1, 1, -1],
+                           [-1, 1, -1],
+                           [-1, -1, -1],
+                           [1, -1, 1],
+                           [1, 1, 1],
+                           [-1, -1, 1],
+                           [-1, 1, 1]])
 
 matrix_result = copy.deepcopy(matrix)
 
@@ -179,7 +179,7 @@ display = (800,600) #Create pygame window with 800 x 600 resolution
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
 glMatrixMode(GL_PROJECTION)
-gluPerspective(45, (display[0]/display[1]), 0.1, 500.0)
+gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
 view_mat = IdentityMat44()
 glMatrixMode(GL_MODELVIEW)
@@ -203,47 +203,64 @@ while True:
         command = q.get()
 
     if command[0] == "translate":
-        dx = int(command[1])
-        dy = int(command[2])
-        glPushMatrix()
-        glLoadIdentity()
-        glTranslatef(0.1,ty,tz)
-        glMultMatrixf(view_mat)
-        glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
-        #glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        glPopMatrix()
-        #tx=0.1
+        dx = float(command[1])
+        dy = float(command[2])
+        if dim == 2:
+            dz = 0
+        else:
+            dz = float(command[3])
+        matrix_result = translate(matrix_result,dx,dy,dz)
+
     elif command[0] == "dilate":
         k = float(command[1])
-        print("dilated")
-        matrix_result=dilate(matrix_result, k)
+        matrix_result = dilate(matrix_result, k)
+
     elif command[0] == "rotate":
-        deg = command[1]
-        a = command[2]
-        b = command[3]
-        rotate(matrix_result, deg, a, b)
+        deg = float(command[1])
+        a = float(command[2])
+        b = float(command[3])
+        matrix_result = rotate(matrix_result, deg, a, b)
+
     elif command[0] == "reflect":
         param = command[1]
-        reflect(matrix_result, param)
+        matrix_result = reflect(matrix_result, dim, param)
+
     elif command[0] == "shear":
         param = command[1]
-        k = command[2]
-        shear(matrix_result, param, k)
+        k = float(command[2])
+        matrix_result = shear(matrix_result, dim, param, k)
+
     elif command[0] == "stretch":
         param = command[1]
-        k = command[2]
-        stretch(matrix_result, param, k)
+        k = float(command[2])
+        matrix_result = stretch(matrix_result, dim, param, k)
+
     elif command[0] == "custom":
-        a = command[1]
-        b = command[2]
-        c = command[3]
-        d = command[4]
-        custom(matrix_result, a, b, c, d)
+        a = float(command[1])
+        b = float(command[2])
+        c = float(command[3])
+        d = float(command[4])
+        if dim == 2:
+            e = 0
+            f = 0
+            g = 0
+            h = 0
+            i = 0
+        else:
+            e = float(command[5])
+            f = float(command[6])
+            g = float(command[7])
+            h = float(command[8])
+            i = float(command[9])
+        custom(matrix_result, dim, a, b, c, d, e, f, g, h, i)
+
     elif command[0] == "multiple":
         n = command[1]
         multiple(matrix, n)
+
     elif command[0] == "reset":
         matrix_result = copy.deepcopy(matrix)
+
     elif command[0] == "exit":
         sys.exit(0)
 
@@ -270,6 +287,7 @@ while True:
                 print()
                 sys.stdout.write(">>> ")
                 sys.stdout.flush()
+
             if   event.key == pygame.K_a:     tx =  0.1 #if key a is pressed
             elif event.key == pygame.K_d:     tx = -0.1 #if key d is pressed
             elif event.key == pygame.K_q:     ty = -0.1 #if key q is pressed
@@ -302,9 +320,10 @@ while True:
     glMultMatrixf(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-    #Axis()
-    # Cube()
-    Draw2D(matrix_result)
+    if pilihan == "2D":
+        Draw2D(matrix_result)
+    else:
+        Cube()
     Axis()
     glPopMatrix()
 
