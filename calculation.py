@@ -70,35 +70,19 @@ def shear(matrix, param, k):
         matrix[i,:] = numpy.matmul(matrix[i,:], transform)
 
 def stretch(matrix, dim, param, k):
-    not_error = True
-    x = 1
-    y = 1
-    z = 1
-
-    if param == "x":
-        x = k
-    elif param == "y":
-        y = k
-    elif param == "z":
-        z = k
-    else:
-        print("Error, parameter salah")
-        not_error = False
-
-    if not_error:
-        if dim == 2:
-            #transform = numpy.array([[x,0,0],
-            #                        [0,y,0],
-            #                        [0,0,1]])
-            transform = numpy.array([[1,k],
-                                     [0,1]])
-            matrix_temp = ConvertTo2D(matrix)
-            matrix_temp = numpy.matmul(matrix_temp, transform)
-            for i in range(len(matrix[:,0])):
-                for j in range(2):
-                    matrix[i][j] = matrix_temp[i][j]
-            return matrix
-        #return numpy.matmul(matrix, transform)
+    if dim == 2:
+        if param == "x":
+            transform = numpy.array([[1,0],
+                                     [k,1]])
+        elif param == "y":
+            transform = numpy.array([[0,1],
+                                     [1,k]])
+        matrix_temp = ConvertTo2D(matrix)
+        matrix_temp = numpy.matmul(matrix_temp, transform)
+        for i in range(len(matrix[:,0])):
+            for j in range(2):
+                matrix[i][j] = matrix_temp[i][j]
+        return matrix
 
 def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
     if dim == 2:
