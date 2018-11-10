@@ -126,8 +126,6 @@ def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
         matrix[i][0], matrix[i][1] = map(float, input().split(","))
 
 # --------------------- INTERFACE AWAL ---------------------------------------
-transform = numpy.array([[1.1,1.2],
-                          [1.3,1.4]])
 bintang = "***************************************************\n"
 welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
 msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
@@ -252,11 +250,11 @@ while True:
             g = float(command[7])
             h = float(command[8])
             i = float(command[9])
-        custom(matrix_result, dim, a, b, c, d, e, f, g, h, i)
+        matrix_result = custom(matrix_result, dim, a, b, c, d, e, f, g, h, i)
 
     elif command[0] == "multiple":
-        n = command[1]
-        multiple(matrix, n)
+        n = int(command[1])
+        matrix_result = multiple(matrix_result, dim, n, consoling)
 
     elif command[0] == "reset":
         matrix_result = copy.deepcopy(matrix)
