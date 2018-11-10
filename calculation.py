@@ -26,6 +26,7 @@ def rotate(matrix, dim, deg, a, b):
 
 def reflect(matrix, dim, param):
     if dim == 2:
+        matrix_temp = ConvertTo2D(matrix)
         if param == "x":
             transform = numpy.array([[1,0],
                                       [0,-1]])
@@ -38,14 +39,18 @@ def reflect(matrix, dim, param):
         elif param == "y=-x":
             transform = numpy.array([[0,-1],
                                       [-1,0]])
-        elif param == "(a,b)":
+        elif param == "(%f,%f)":
             print("dsaxcz")
     elif dim == 3:
         print("sadas")
+    matrix_temp = numpy.matmul(matrix_temp, transform)
+    for i in range(len(matrix[:,0])):
+        for j in range(2):
+            matrix[i][j] = matrix_temp[i][j]
+    return matrix
 
-def shear(matrix, param, k):
+def shear(matrix, dim, param, k):
     not_error = True
-    transform = numpy.identity(4)
     x = 0
     y = 0
     z = 0
@@ -60,37 +65,37 @@ def shear(matrix, param, k):
         not_error = False
 
     if not_error:
-        transform[1,0] = x
-        transform[2,0] = x
-        transform[0,1] = y
-        transform[2,1] = y
-        transform[0,2] = z
-        transform[1,2] = z
-    for i in range(len(matrix[:,0])):
-        matrix[i,:] = numpy.matmul(matrix[i,:], transform)
+        if dim == 2:
+            transform = numpy.array([[1, y, 0],
+                                     [x, 1, 0],
+                                     [0, 0, 1]])
+            return numpy.matmul(matrix, transform)
 
 def stretch(matrix, dim, param, k):
-    if dim == 2:
-        if param == "x":
-            transform = numpy.array([[1,0],
-                                     [k,1]])
-        elif param == "y":
-            transform = numpy.array([[0,1],
-                                     [1,k]])
-        matrix_temp = ConvertTo2D(matrix)
-        matrix_temp = numpy.matmul(matrix_temp, transform)
-        for i in range(len(matrix[:,0])):
-            for j in range(2):
-                matrix[i][j] = matrix_temp[i][j]
-        return matrix
+    if param == "x" or param == "y" or param == "z":
+        if dim == 2:
+            if param == "x":
+                transform = numpy.array([[1,0],
+                                         [k,1]])
+            elif param == "y":
+                transform = numpy.array([[0,1],
+                                         [1,k]])
+            matrix_temp = ConvertTo2D(matrix)
+            matrix_temp = numpy.matmul(matrix_temp, transform)
+            for i in range(len(matrix[:,0])):
+                for j in range(2):
+                    matrix[i][j] = matrix_temp[i][j]
+            return matrix
+    else:
+        print("Parameter salah")
 
 def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
     if dim == 2:
         #Linear transformation for 2D
         matrix_temp = ConvertTo2D(matrix) #Create temporary N x 2 matrix
         #Create 2 x 2 transformation matrix
-        transform = numpy.array([[a,b],
-                                  [c,d]])
+        transform = numpy.array([[d,b],
+                                 [c,a]])
         #Matrix multiplication between matrix_temp and transform
         matrix_temp = numpy.matmul(matrix_temp, transform)
         #Copy x and y element from N x 2 matrix to N x 4 matrix
@@ -101,9 +106,9 @@ def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
     else:
         #Linear transformation for 3D
         #Create 3 x 3 transformation matrix
-        transform = numpy.array([[a,b,c],
-                                  [d,e,f],
-                                  [g,h,i]])
+        transform = numpy.array([[a,d,g],
+                                 [b,e,h],
+                                 [c,f,i]])
         return numpy.matmul(matrix, transform)
 
 def multiple(matrix, dim, n):
