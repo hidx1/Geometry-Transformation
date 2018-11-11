@@ -25,7 +25,7 @@ def dilate(matrixIn, k):
             matrix[i][j] *= k
     return matrix
 
-def rotate(matrixIn, dim, deg, a, b, c):
+def rotate(matrixIn, dim, deg, a, b, c, axis):
     matrix = copy.deepcopy(matrixIn)
     matrix = translate(matrix, a, b, c)
     transform = numpy.identity(3)
@@ -37,9 +37,21 @@ def rotate(matrixIn, dim, deg, a, b, c):
         transform = numpy.array([[cos, -sin, 0],
                                  [sin, cos, 0],
                                  [0, 0, 1]])
-
+    else:
+        if axis == "x":
+            transform = numpy.array([[1, 0, 0],
+                                    [0, cos, -sin],
+                                    [0, sin, cos]])
+        elif axis == "y":
+            transform = numpy.array([[cos, 0, sin],
+                                    [0, 1, 0],
+                                    [-sin, 0, cos]])
+        else:
+            transform = numpy.array([[cos, -sin, 0],
+                                    [sin, cos, 0],
+                                    [0, 0, 1]])
     matrix = numpy.matmul(matrix, transform)
-    matrix = translate(matrix, -a, -b, -c)
+    matrix = translate(matrix, -a, -b, c)
     return matrix
 
 def reflect(matrixIn, dim, param):
@@ -198,9 +210,11 @@ def multiple(matrixIn, dim, n):
             b = float(command[3])
             if dim == 2:
                 c = 0
+                axis = ""
             else:
                 c = float(command[4])
-            matrix = rotate(matrix, dim, deg, a, b, c)
+                axis = command[5]
+            matrix = rotate(matrix, dim, deg, a, b, c, axis)
 
         elif command[0] == "reflect":
             param = command[1]

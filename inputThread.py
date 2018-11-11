@@ -25,9 +25,11 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             b = float(perintah[3])
             if dim == 2:
                 c = 0
+                axis = ""
             else:
                 c = float(perintah[4])
-            matrix_result = rotate(matrix_result, dim, deg, a, b, c)
+                axis = perintah[5]
+            matrix_result = rotate(matrix_result, dim, deg, a, b, c, axis)
 
         elif perintah[0] == "reflect":
             param = perintah[1]
