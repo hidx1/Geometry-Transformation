@@ -9,14 +9,23 @@ def ConvertTo2D(matrix):
             matrix_result[i][j] = matrix[i][j]
     return matrix_result
 
-def translate(matrix, dx, dy, dz):
+def animasi(matrix, matrixAnimasi):
+    for i in range(0,len(matrix[:,0])):
+        matrix[i][0] += matrixAnimasi[i][0]
+        matrix[i][1] += matrixAnimasi[i][1]
+        matrix[i][2] += matrixAnimasi[i][2]
+    return matrix
+
+def translate(matrix, matrixInput, dx, dy, dz):
     for i in range(len(matrix[:,0])):
         matrix[i][0] += dx
         matrix[i][1] += dy
         matrix[i][2] += dz
     return matrix
 
-def dilate(matrix, k):
+def dilate(matrixIn, factor):
+    matrix=copy.deepcopy(matrixIn)
+    k = float(factor)
     for i in range(len(matrix[:,0])):
         for j in range(3):
             matrix[i][j] *= k

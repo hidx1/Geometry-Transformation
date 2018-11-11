@@ -13,15 +13,33 @@ from draw import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
-q = queue.Queue()
+
 numpy.set_printoptions(suppress=True) #prevent scientific notation
 
+global q
+q = queue.Queue()
+
+def differenceCalc(matrixOri,matrixTarget,nFrame):
+    #fungsi yang menghasilkan matrix yang berisi perubahan yang harus di push ke queue
+    diffMatrix=[]
+    for indexRow in range(0,len(matrixOri)):
+        rowToAppend=[]
+        for indexColumn in range(0,len(matrixOri[0])):
+            rowToAppend.append(float((matrixTarget[indexRow][indexColumn]-matrixOri[indexRow][indexColumn])/nFrame))
+        diffMatrix.append(rowToAppend)
+    return numpy.array(diffMatrix)
+
 def windowInput(q): #Thread to switch between pygame window and command shell
-    global consoling
-    consoling = True
     while True:
-        command = input(">>> ").split(" ")
-        q.put(command)
+        perintah = input(">>> ").split(" ")
+        print(matrix_result)
+        print(dilate(matrix_result,perintah[1]))
+        # print(type(dilate(matrix_result,perintah[1])))
+        # print(type(differenceCalc(matrix_result,dilate(matrix_result,perintah[1]),60)))
+        # print(type(command))
+        print(differenceCalc(matrix_result,dilate(matrix_result,perintah[1]),60))
+        for i in range(0,61):
+            q.put(differenceCalc(matrix_result,dilate(matrix_result,perintah[1]),60))
 
 def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
     print("Masukkan nilai point:")
@@ -54,20 +72,16 @@ if(pilihan == "2D"):
     pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
     matrix = numpy.zeros((pasangan_point, 3)) #Bentuk matrix 3 * pasangan_point
     CreateVertexMatrix(pasangan_point, matrix)
-    print()
-    print("Matrix yang dihasilkan: ")
-    print(matrix)
-    print()
 else:
     dim = 3
-    matrix = numpy.array([[1, -1, -1],
-                           [1, 1, -1],
-                           [-1, 1, -1],
-                           [-1, -1, -1],
-                           [1, -1, 1],
-                           [1, 1, 1],
-                           [-1, -1, 1],
-                           [-1, 1, 1]])
+    matrix = numpy.array([[1.0, -1.0, -1.0],
+                           [1.0, 1.0, -1.0],
+                           [-1.0, 1.0, -1.0],
+                           [-1.0, -1.0, -1.0],
+                           [1.0, -1.0, 1.0],
+                           [1.0, 1.0, 1.0],
+                           [-1.0, -1.0, 1.0],
+                           [-1.0, 1.0, 1.0]])
 
 matrix_result = copy.deepcopy(matrix)
 
@@ -98,74 +112,20 @@ ry = 0
 rx = 0
 rz = 0
 command = [""] * 5 #Initialize list command with empty string
+x=0
 
 while True:
-    command[0] = ""
+    if x==0:
+        print(id(command),"bbb")
+    x+=1
     #Bagian command
     if not q.empty():
         command = q.get()
+        # print(command)
+        matrix_result = animasi(matrix_result,command)
+        print(matrix_result)
 
-    if command[0] == "translate":
-        dx = float(command[1])
-        dy = float(command[2])
-        if dim == 2:
-            dz = 0
-        else:
-            dz = float(command[3])
-        matrix_result = translate(matrix_result,dx,dy,dz)
-
-    elif command[0] == "dilate":
-        k = float(command[1])
-        matrix_result = dilate(matrix_result, k)
-
-    elif command[0] == "rotate":
-        deg = float(command[1])
-        a = float(command[2])
-        b = float(command[3])
-        matrix_result = rotate(matrix_result, deg, a, b)
-
-    elif command[0] == "reflect":
-        param = command[1]
-        matrix_result = reflect(matrix_result, dim, param)
-
-    elif command[0] == "shear":
-        param = command[1]
-        k = float(command[2])
-        matrix_result = shear(matrix_result, dim, param, k)
-
-    elif command[0] == "stretch":
-        param = command[1]
-        k = float(command[2])
-        matrix_result = stretch(matrix_result, dim, param, k)
-
-    elif command[0] == "custom":
-        a = float(command[1])
-        b = float(command[2])
-        c = float(command[3])
-        d = float(command[4])
-        if dim == 2:
-            e = 0
-            f = 0
-            g = 0
-            h = 0
-            i = 0
-        else:
-            e = float(command[5])
-            f = float(command[6])
-            g = float(command[7])
-            h = float(command[8])
-            i = float(command[9])
-        matrix_result = custom(matrix_result, dim, a, b, c, d, e, f, g, h, i)
-
-    elif command[0] == "multiple":
-        n = int(command[1])
-        matrix_result = multiple(matrix_result, dim, n, consoling)
-
-    elif command[0] == "reset":
-        matrix_result = copy.deepcopy(matrix)
-
-    elif command[0] == "exit":
-        sys.exit(0)
+    
 
     #Event in pygame window
     events = pygame.event.get()
