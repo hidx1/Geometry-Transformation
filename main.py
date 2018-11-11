@@ -166,7 +166,7 @@ while True:
         Draw2D(matrix_result)
     else:
         Cube(matrix_result)
-    Axis()
+    Axis(dim)
     glPopMatrix()
 
     pygame.display.flip()
