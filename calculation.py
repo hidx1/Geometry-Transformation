@@ -41,6 +41,7 @@ def rotate(matrixIn, dim, deg, a, b):
     print("rotate")
 
 def reflect(matrixIn, dim, param):
+    param = param.lower()
     #target = titik pantul (string)
     #dim = dimensi
     #rtype : matrix
@@ -93,15 +94,15 @@ def reflect(matrixIn, dim, param):
                                     [0, -1, 2*b],
                                     [0, 0, 1]])
     elif dim == 3: #3D
-        if param == "xy":
+        if param in ("xy","yx") :
             transform = numpy.array([[1,0,0],
                                     [0,1,0],
                                     [0,0,-1]])
-        elif param == "yz":
+        elif param in ("yz","zy") :
             transform = numpy.array([[-1,0,0],
                                     [0,1,0],
                                     [0,0,1]])
-        elif param == "xz":
+        elif param in ("xz","zx") :
             transform = numpy.array([[1,0,0],
                                     [0,-1,0],
                                     [0,0,1]])
