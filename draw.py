@@ -1,5 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from math import *
+import numpy
 warnaCube = (
     (1,0,0),
     (0,1,0),
@@ -109,3 +111,6 @@ def glRotationfKw(angle,x,y,z):
         matrix[2,2]=z*z*(1-c)+c
         matori= numpy.mat(matrix)*numpy.mat(matori)
         glLoadMatrixf(matori)
+
+def IdentityMat44():
+    return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')

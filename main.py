@@ -16,9 +16,6 @@ from OpenGL.GLU import *
 q = queue.Queue()
 numpy.set_printoptions(suppress=True) #prevent scientific notation
 
-def IdentityMat44():
-    return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')
-
 def windowInput(q): #Thread to switch between pygame window and command shell
     global consoling
     consoling = True
@@ -99,6 +96,7 @@ ty = 0
 tz = 0
 ry = 0
 rx = 0
+rz = 0
 command = [""] * 5 #Initialize list command with empty string
 
 while True:
