@@ -2,34 +2,39 @@ import numpy
 import copy
 import math
 
-def ConvertTo4D(matrix):
+def ConvertTo4D(matrixIn):
+    matrix = copy.deepcopy(matrixIn)
     matrix_result = numpy.zeros((len(matrix[:,0]), 4))
     for i in range(len(matrix[:,0])):
         for j in range(3):
             matrix_result[i][j] = matrix[i][j]
     return matrix_result
 
-def animasi(matrix, matrixAnimasi):
+def animasi(matrixIn, matrixAnimasi):
+    matrix = copy.deepcopy(matrixIn)
     for i in range(0,len(matrix[:,0])):
         matrix[i][0] += matrixAnimasi[i][0]
         matrix[i][1] += matrixAnimasi[i][1]
         matrix[i][2] += matrixAnimasi[i][2]
     return matrix
 
-def translate(matrix, dx, dy, dz):
+def translate(matrixIn, dx, dy, dz):
+    matrix = copy.deepcopy(matrixIn)
     for i in range(len(matrix[:,0])):
         matrix[i][0] += dx
         matrix[i][1] += dy
         matrix[i][2] += dz
     return matrix
 
-def dilate(matrix, k):
+def dilate(matrixIn, k):
+    matrix = copy.deepcopy(matrixIn)
     for i in range(len(matrix[:,0])):
         for j in range(3):
             matrix[i][j] *= k
     return matrix
 
-def rotate(matrix, dim, deg, a, b, c):
+def rotate(matrixIn, dim, deg, a, b, c):
+    matrix = copy.deepcopy(matrixIn)
     matrix = translate(matrix, a, b, c)
     transform = numpy.identity(dim + 1)
 
@@ -45,7 +50,8 @@ def rotate(matrix, dim, deg, a, b, c):
     matrix = translate(matrix, -a, -b, -c)
     return matrix
 
-def reflect(matrix, dim, param):
+def reflect(matrixIn, dim, param):
+    matrix = copy.deepcopy(matrixIn)
     param = param.lower()
     #target = titik pantul (string)
     #dim = dimensi
@@ -115,7 +121,8 @@ def reflect(matrix, dim, param):
         # print(numpy.mat(matrix)*numpy.mat(transform))
     return numpy.array(numpy.mat(matrix)*numpy.mat(transform))
 
-def shear(matrix, dim, param, k):
+def shear(matrixIn, dim, param, k):
+    matrix = copy.deepcopy(matrixIn)
     transform = numpy.identity(dim + 1)
     x = 0
     y = 0
@@ -141,7 +148,8 @@ def shear(matrix, dim, param, k):
         matrix = numpy.matmul(matrix, transform)
     return matrix
 
-def stretch(matrix, dim, param, k):
+def stretch(matrixIn, dim, param, k):
+    matrix = copy.deepcopy(matrixIn)
     transform = numpy.identity(dim + 1)
     x = 1
     y = 1
@@ -167,7 +175,8 @@ def stretch(matrix, dim, param, k):
         matrix = numpy.matmul(matrix, transform)
     return matrix
 
-def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
+def custom(matrixIn, dim, a, b, c, d, e, f, g, h, i):
+    matrix = copy.deepcopy(matrixIn)
     if dim == 2:
         transform = numpy.array([[d,b,0],
                                  [c,a,0],
@@ -178,7 +187,8 @@ def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
                                  [c,f,i]])
     return numpy.matmul(matrix, transform)
 
-def multiple(matrix, dim, n):
+def multiple(matrixIn, dim, n):
+    matrix = copy.deepcopy(matrixIn)
     print("Masukkan " + str(n) + " command(s): ")
     for i in range(n):
         command = input("Command " + str(i+1) + ": ").split(" ")

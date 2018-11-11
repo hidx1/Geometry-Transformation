@@ -86,7 +86,7 @@ glTranslatef(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 
-_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result,)) #inisialisasi new thread
+_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result)) #inisialisasi new thread
 
 tx = 0
 ty = 0
