@@ -81,7 +81,7 @@ def Draw2D(matrix):
         glVertex3fv(matrix[(i+1) % len(matrix)])
     glEnd()
     glBegin(GL_POLYGON)
-    glColor3f(0, 1, 0)
+    glColor3f(0.3, 0.5, 0)
     for i in range(0,len(matrix)):
         glVertex3fv(matrix[i % len(matrix)])
     glEnd()

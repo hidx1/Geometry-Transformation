@@ -16,7 +16,7 @@ def animasi(matrix, matrixAnimasi):
         matrix[i][2] += matrixAnimasi[i][2]
     return matrix
 
-def translate(matrix, matrixInput, dx, dy, dz):
+def translate(matrix, dx, dy, dz):
     for i in range(len(matrix[:,0])):
         matrix[i][0] += dx
         matrix[i][1] += dy
@@ -121,7 +121,7 @@ def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
                                  [c,f,i]])
         return numpy.matmul(matrix, transform)
 
-def multiple(matrix, dim, n, consoling):
+def multiple(matrix, dim, n):
     sys.stdout.write("Masukkan " + str(n) + " command(s): ")
     sys.stdout.flush()
     for i in range(n):
@@ -178,3 +178,13 @@ def multiple(matrix, dim, n, consoling):
                 i = float(command[9])
             matrix = custom(matrix, dim, a, b, c, d, e, f, g, h, i)
     return matrix
+
+def differenceCalc(matrixOri,matrixTarget,nFrame):
+    #fungsi yang menghasilkan matrix yang berisi perubahan yang harus di push ke queue
+    diffMatrix=[]
+    for indexRow in range(0,len(matrixOri)):
+        rowToAppend=[]
+        for indexColumn in range(0,len(matrixOri[0])):
+            rowToAppend.append(float((matrixTarget[indexRow][indexColumn]-matrixOri[indexRow][indexColumn])/nFrame))
+        diffMatrix.append(rowToAppend)
+    return numpy.array(diffMatrix)

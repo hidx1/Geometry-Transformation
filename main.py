@@ -7,39 +7,19 @@ import _thread
 import sys
 import time
 import queue
+import math
 from calculation import *
 from pygame.locals import *
 from draw import *
-
+from inputThread import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
 numpy.set_printoptions(suppress=True) #prevent scientific notation
 
 global q
+global dim
 q = queue.Queue()
-
-def differenceCalc(matrixOri,matrixTarget,nFrame):
-    #fungsi yang menghasilkan matrix yang berisi perubahan yang harus di push ke queue
-    diffMatrix=[]
-    for indexRow in range(0,len(matrixOri)):
-        rowToAppend=[]
-        for indexColumn in range(0,len(matrixOri[0])):
-            rowToAppend.append(float((matrixTarget[indexRow][indexColumn]-matrixOri[indexRow][indexColumn])/nFrame))
-        diffMatrix.append(rowToAppend)
-    return numpy.array(diffMatrix)
-
-def windowInput(q): #Thread to switch between pygame window and command shell
-    while True:
-        perintah = input(">>> ").split(" ")
-        print(matrix_result)
-        print(dilate(matrix_result,perintah[1]))
-        # print(type(dilate(matrix_result,perintah[1])))
-        # print(type(differenceCalc(matrix_result,dilate(matrix_result,perintah[1]),60)))
-        # print(type(command))
-        print(differenceCalc(matrix_result,dilate(matrix_result,perintah[1]),60))
-        for i in range(0,61):
-            q.put(differenceCalc(matrix_result,dilate(matrix_result,perintah[1]),60))
 
 def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
     print("Masukkan nilai point:")
@@ -103,7 +83,7 @@ glTranslatef(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 
-_thread.start_new_thread(windowInput,(q,))
+_thread.start_new_thread(windowInput,(q,dim,matrix_result,)) #inisialisasi new thread
 
 tx = 0
 ty = 0
@@ -111,21 +91,12 @@ tz = 0
 ry = 0
 rx = 0
 rz = 0
-command = [""] * 5 #Initialize list command with empty string
-x=0
 
 while True:
-    if x==0:
-        print(id(command),"bbb")
-    x+=1
     #Bagian command
     if not q.empty():
         command = q.get()
-        # print(command)
         matrix_result = animasi(matrix_result,command)
-        print(matrix_result)
-
-    
 
     #Event in pygame window
     events = pygame.event.get()
@@ -196,4 +167,4 @@ while True:
     glPopMatrix()
 
     pygame.display.flip()
-    pygame.time.wait(10)
+    pygame.time.wait(math.floor(1000/75))
