@@ -2,14 +2,6 @@ import numpy
 import copy
 import math
 
-def ConvertTo4D(matrixIn):
-    matrix = copy.deepcopy(matrixIn)
-    matrix_result = numpy.zeros((len(matrix[:,0]), 4))
-    for i in range(len(matrix[:,0])):
-        for j in range(3):
-            matrix_result[i][j] = matrix[i][j]
-    return matrix_result
-
 def animasi(matrixIn, matrixAnimasi):
     matrix = copy.deepcopy(matrixIn)
     for i in range(0,len(matrix[:,0])):
@@ -43,8 +35,8 @@ def rotate(matrixIn, dim, deg, a, b, c):
 
     if dim == 2: #2D
         transform = numpy.array([[cos, -sin, 0],
-                                [sin, cos, 0],
-                                [0, 0, 1]])
+                                 [sin, cos, 0],
+                                 [0, 0, 1]])
 
     matrix = numpy.matmul(matrix, transform)
     matrix = translate(matrix, -a, -b, -c)
@@ -140,12 +132,10 @@ def shear(matrixIn, dim, param, k):
                                  [0, 0, 1]])
         matrix = numpy.matmul(matrix, transform)
     else: #3D
-        transform = numpy.array([[1, y, z, 0],
-                                 [x, 1, z, 0],
-                                 [x, y, 1, 0],
-                                 [0, 0, 0, 1]])
-        matrix = ConvertTo4D(matrix)
-        matrix = numpy.matmul(matrix, transform)
+        transform = numpy.array([[1, y, z],
+                                 [x, 1, z],
+                                 [x, y, 1]])
+    matrix = numpy.matmul(matrix, transform)
     return matrix
 
 def stretch(matrixIn, dim, param, k):
@@ -165,14 +155,11 @@ def stretch(matrixIn, dim, param, k):
         transform = numpy.array([[x, 0, 0],
                                  [0, y, 0],
                                  [0, 0, 1]])
-        matrix = numpy.matmul(matrix, transform)
     else: #3D
-        transform = numpy.array([[x, 0, 0, 0],
-                                 [0, y, 0, 0],
-                                 [0, 0, z, 0],
-                                 [0, 0, 0, 1]])
-        matrix = ConvertTo4D(matrix)
-        matrix = numpy.matmul(matrix, transform)
+        transform = numpy.array([[x, 0, 0],
+                                 [0, y, 0],
+                                 [0, 0, z]])
+    matrix = numpy.matmul(matrix, transform)
     return matrix
 
 def custom(matrixIn, dim, a, b, c, d, e, f, g, h, i):
@@ -212,7 +199,7 @@ def multiple(matrixIn, dim, n):
             if dim == 2:
                 c = 0
             else:
-                c = float(perintah[4])
+                c = float(command[4])
             matrix = rotate(matrix, dim, deg, a, b, c)
 
         elif command[0] == "reflect":
