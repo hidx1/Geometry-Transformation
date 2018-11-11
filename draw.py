@@ -30,7 +30,7 @@ edges = (
     (5,7)
     )
 
-surfaces = (
+surfacesCube = (
     (0,1,2,3),
     (3,2,7,6),
     (6,7,5,4),
@@ -41,7 +41,7 @@ surfaces = (
 
 def Cube(vertexMatrix): #Draw cube
     glBegin(GL_QUADS)
-    for surface in surfaces:
+    for surface in surfacesCube:
         x = 0
         for vertex in surface:
             x+=1
