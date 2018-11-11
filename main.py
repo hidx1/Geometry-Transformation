@@ -124,8 +124,8 @@ while True:
 
             if   event.key == pygame.K_a:     tx =  0.1 #if key a is pressed
             elif event.key == pygame.K_d:     tx = -0.1 #if key d is pressed
-            elif event.key == pygame.K_q:     ty = -0.1 #if key q is pressed
-            elif event.key == pygame.K_e:     ty =  0.1 #if key e is pressed
+            elif event.key == pygame.K_q:     ty =  0.1 #if key q is pressed
+            elif event.key == pygame.K_e:     ty = -0.1 #if key e is pressed
             elif event.key == pygame.K_w:     tz =  0.1 #if key w is pressed
             elif event.key == pygame.K_s:     tz = -0.1 #if key s is pressed
             elif event.key == pygame.K_UP:    rx = -1.0 #if up anchor key is pressed
@@ -139,8 +139,8 @@ while True:
         elif event.type == pygame.KEYUP:
             if   event.key == pygame.K_a     and tx > 0: tx = 0
             elif event.key == pygame.K_d     and tx < 0: tx = 0
-            elif event.key == pygame.K_q     and ty < 0: ty = 0
-            elif event.key == pygame.K_e     and ty > 0: ty = 0
+            elif event.key == pygame.K_q     and ty > 0: ty = 0
+            elif event.key == pygame.K_e     and ty < 0: ty = 0
             elif event.key == pygame.K_w     and tz > 0: tz = 0
             elif event.key == pygame.K_s     and tz < 0: tz = 0
             elif event.key == pygame.K_RIGHT and ry > 0: ry = 0.0
