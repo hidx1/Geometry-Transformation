@@ -1,6 +1,6 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
-colors = (
+warnaCube = (
     (1,0,0),
     (0,1,0),
     (0,0,1),
@@ -14,17 +14,6 @@ colors = (
     (1,1,1),
     (0,1,1),
     )
-
-verticies = [
-    [1, -1, -1],
-    [1, 1, -1],
-    [-1, 1, -1],
-    [-1, -1, -1],
-    [1, -1, 1],
-    [1, 1, 1],
-    [-1, -1, 1],
-    [-1, 1, 1]
-    ]
 
 edges = (
     (0,1),
@@ -56,15 +45,13 @@ def Cube(vertexMatrix): #Draw cube
         x = 0
         for vertex in surface:
             x+=1
-            glColor3fv(colors[x])
+            glColor3fv(warnaCube[x])
             glVertex3fv(vertexMatrix[vertex])
     glEnd()
 
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
-            #print(verticies[vertex])
-            # print(type(verticies[vertex]))
             glVertex3fv(vertexMatrix[vertex])
     glEnd()
 
@@ -96,3 +83,29 @@ def Draw2D(matrix):
     for i in range(0,len(matrix)):
         glVertex3fv(matrix[i % len(matrix)])
     glEnd()
+
+def glTranslatefKw(tx,ty,tz):
+        matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
+        matrix[3,0]+=tx
+        matrix[3,1]+=ty
+        matrix[3,2]+=tz
+        glLoadMatrixf(matrix)
+
+def glRotationfKw(angle,x,y,z):
+        matori = glGetFloatv(GL_MODELVIEW_MATRIX)
+        c = cos(radians(angle))
+        s = sin(radians(angle))
+        matrix=IdentityMat44()
+        matrix[0,0]=x*x*(1-c)+c
+        matrix[0,1]=x*y*(1-c)-z*s
+        matrix[0,2]=x*z*(1-c)-y*s
+
+        matrix[1,0]=y*x*(1-c)+z*s
+        matrix[1,1]=y*y*(1-c)+c
+        matrix[1,2]=y*z*(1-c)+x*s
+
+        matrix[2,0]=x*z*(1-c)+y*s
+        matrix[2,1]=y*z*(1-c)-x*s
+        matrix[2,2]=z*z*(1-c)+c
+        matori= numpy.mat(matrix)*numpy.mat(matori)
+        glLoadMatrixf(matori)

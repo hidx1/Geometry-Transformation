@@ -19,7 +19,7 @@ numpy.set_printoptions(suppress=True) #prevent scientific notation
 def IdentityMat44():
     return numpy.matrix(numpy.identity(4), copy=False, dtype='float32')
 
-def threadedConsole(q): #Thread to switch between pygame window and command shell
+def windowInput(q): #Thread to switch between pygame window and command shell
     global consoling
     consoling = True
     while True:
@@ -92,7 +92,8 @@ glTranslatef(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 
-consoling = False
+_thread.start_new_thread(windowInput,(q,))
+
 tx = 0
 ty = 0
 tz = 0
@@ -168,9 +169,6 @@ while True:
     elif command[0] == "exit":
         sys.exit(0)
 
-    if not consoling: #If not in pygame window, switch Thread to command shell
-            _thread.start_new_thread(threadedConsole,(q,))
-
     #Event in pygame window
     events = pygame.event.get()
     for event in events:
@@ -194,40 +192,47 @@ while True:
 
             if   event.key == pygame.K_a:     tx =  0.1 #if key a is pressed
             elif event.key == pygame.K_d:     tx = -0.1 #if key d is pressed
-            elif event.key == pygame.K_q:     ty = -0.1 #if key q is pressed
-            elif event.key == pygame.K_e:     ty =  0.1 #if key e is pressed
+            elif event.key == pygame.K_q:     ty =  0.1 #if key q is pressed
+            elif event.key == pygame.K_e:     ty = -0.1 #if key e is pressed
             elif event.key == pygame.K_w:     tz =  0.1 #if key w is pressed
             elif event.key == pygame.K_s:     tz = -0.1 #if key s is pressed
             elif event.key == pygame.K_RIGHT: ry =  1.0 #if right anchor key is pressed
             elif event.key == pygame.K_LEFT:  ry = -1.0 #if left anchor key is pressed
             elif event.key == pygame.K_UP:    rx = -1.0 #if up anchor key is pressed
             elif event.key == pygame.K_DOWN:  rx =  1.0 #if down anchor key is pressed
+            elif event.key == pygame.K_c:     rz = -1.0 #if c anchor key is pressed
+            elif event.key == pygame.K_x:     rz =  1.0 #if x anchor key is pressed
 
         #If keyboard key is let go
         elif event.type == pygame.KEYUP:
             if   event.key == pygame.K_a     and tx > 0: tx = 0
             elif event.key == pygame.K_d     and tx < 0: tx = 0
-            elif event.key == pygame.K_q     and ty < 0: ty = 0
-            elif event.key == pygame.K_e     and ty > 0: ty = 0
+            elif event.key == pygame.K_q     and ty > 0: ty = 0
+            elif event.key == pygame.K_e     and ty < 0: ty = 0
             elif event.key == pygame.K_w     and tz > 0: tz = 0
             elif event.key == pygame.K_s     and tz < 0: tz = 0
             elif event.key == pygame.K_RIGHT and ry > 0: ry = 0.0
             elif event.key == pygame.K_LEFT  and ry < 0: ry = 0.0
             elif event.key == pygame.K_UP    and rx < 0: rx = 0.0
             elif event.key == pygame.K_DOWN  and rx > 0: rx = 0.0
+            elif event.key == pygame.K_c     and rz < 0: rz = 0.0
+            elif event.key == pygame.K_x     and rz > 0: rz = 0.0
 
     glPushMatrix()
     glLoadIdentity()
-    glTranslatef(tx,ty,tz)
-    glRotatef(ry, 0, 1, 0)
-    glRotatef(rx, 1, 0, 0)
+
+    glTranslatefKw(tx,ty,tz)#translate by tx,ty,tz
+    glRotationfKw(rx,1, 0, 0)
+    glRotationfKw(ry,0, 1, 0)
+    glRotationfKw(rz,0, 0, 1)
+
     glMultMatrixf(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
     if pilihan == "2D":
         Draw2D(matrix_result)
     else:
-        Cube()
+        Cube(matrix_result)
     Axis()
     glPopMatrix()
 
