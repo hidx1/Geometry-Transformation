@@ -1,7 +1,7 @@
 import numpy
 import copy
-import sys
 import math
+
 def ConvertTo2D(matrix):
     matrix_result = numpy.zeros((len(matrix[:,0]), 2))
     for i in range(len(matrix[:,0])):
@@ -23,24 +23,29 @@ def translate(matrix, dx, dy, dz):
         matrix[i][2] += dz
     return matrix
 
-def dilate(matrixIn, factor):
-    matrix=copy.deepcopy(matrixIn)
-    k = float(factor)
+def dilate(matrix, k):
     for i in range(len(matrix[:,0])):
         for j in range(3):
             matrix[i][j] *= k
     return matrix
 
-def rotate(matrixIn, dim, deg, a, b):
-    matrix = copy.deepcopy(matrixIn)
-    c = cos(radians(deg))
-    s = sin(radians(deg))
-    base = numpy.array[[c,-1*s],
-                       [s,c]]
-    matrix = numpy.mat(base)*numpy.mat()
-    print("rotate")
+def rotate(matrix, dim, deg, a, b, c):
+    matrix = translate(matrix, a, b, c)
+    transform = numpy.identity(dim + 1, dtype = float)
 
-def reflect(matrixIn, dim, param):
+    cos = math.cos(math.radians(float(deg)))
+    sin = math.sin(math.radians(float(deg)))
+
+    if dim == 2: #2D
+        transform = numpy.array([[cos, -sin, 0],
+                                [sin, cos, 0],
+                                [0, 0, 1]])
+
+    matrix = numpy.matmul(matrix, transform)
+    matrix = translate(matrix, -a, -b, -c)
+    return matrix
+
+def reflect(matrix, dim, param):
     param = param.lower()
     #target = titik pantul (string)
     #dim = dimensi
@@ -106,7 +111,7 @@ def reflect(matrixIn, dim, param):
             transform = numpy.array([[1,0,0],
                                     [0,-1,0],
                                     [0,0,1]])
-        
+
         # print(numpy.mat(matrix)*numpy.mat(transform))
     return numpy.array(numpy.mat(matrix)*numpy.mat(transform))
 
@@ -173,8 +178,7 @@ def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
         return numpy.matmul(matrix, transform)
 
 def multiple(matrix, dim, n):
-    sys.stdout.write("Masukkan " + str(n) + " command(s): ")
-    sys.stdout.flush()
+    print("Masukkan " + str(n) + " command(s): ")
     for i in range(n):
         command = input("Command " + str(i+1) + ": ").split(" ")
         if command[0] == "translate":
@@ -194,7 +198,11 @@ def multiple(matrix, dim, n):
             deg = float(command[1])
             a = float(command[2])
             b = float(command[3])
-            matrix = rotate(matrix, deg, a, b)
+            if dim == 2:
+                c = 0
+            else:
+                c = float(perintah[4])
+            matrix = rotate(matrix, dim, deg, a, b, c)
 
         elif command[0] == "reflect":
             param = command[1]
@@ -228,6 +236,7 @@ def multiple(matrix, dim, n):
                 h = float(command[8])
                 i = float(command[9])
             matrix = custom(matrix, dim, a, b, c, d, e, f, g, h, i)
+    print()
     return matrix
 
 def differenceCalc(matrixOri,matrixTarget,nFrame):

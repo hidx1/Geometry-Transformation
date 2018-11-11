@@ -52,6 +52,7 @@ if(pilihan == "2D"):
     pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
     matrix = numpy.zeros((pasangan_point, 3)) #Bentuk matrix 3 * pasangan_point
     CreateVertexMatrix(pasangan_point, matrix)
+    print()
 else:
     dim = 3
     matrix = numpy.array([[1.0, -1.0, -1.0],
@@ -67,36 +68,36 @@ matrix_result = copy.deepcopy(matrix)
 
 view_mat = IdentityMat44()
 
-# --------------------- Pygame Window Initialization and glView Initialization ---------------------------------------
+# --------------------- Pygame Window and glView Initialization ----------------
 pygame.init() #Initialize pygame window
 pygame.display.set_caption('Transformasi Geometri ' + str(pilihan)) #Set pygame window name
 display = (800,600) #Create pygame window with 800 x 600 resolution
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
 glMatrixMode(GL_PROJECTION)
-gluPerspective(45, (display[0]/display[1]), 0.1, 500.0)
+gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
 view_mat = IdentityMat44()
 glMatrixMode(GL_MODELVIEW)
 glLoadIdentity()
-glTranslatefKw(0, 0, -15)
+glTranslatef(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 
-_thread.start_new_thread(windowInput,(q,dim,matrix_result,)) #inisialisasi new thread
+_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result,)) #inisialisasi new thread
 
 tx = 0
 ty = 0
 tz = 0
-ry = 0
 rx = 0
+ry = 0
 rz = 0
 
 while True:
     #Bagian command
     if not q.empty():
         command = q.get()
-        matrix_result = animasi(matrix_result,command)
+        matrix_result = animasi(matrix_result, command)
 
     #Event in pygame window
     events = pygame.event.get()
@@ -121,23 +122,23 @@ while True:
 
             if   event.key == pygame.K_a:     tx =  0.1 #if key a is pressed
             elif event.key == pygame.K_d:     tx = -0.1 #if key d is pressed
-            elif event.key == pygame.K_q:     ty =  0.1 #if key q is pressed
-            elif event.key == pygame.K_e:     ty = -0.1 #if key e is pressed
+            elif event.key == pygame.K_q:     ty = -0.1 #if key q is pressed
+            elif event.key == pygame.K_e:     ty =  0.1 #if key e is pressed
             elif event.key == pygame.K_w:     tz =  0.1 #if key w is pressed
             elif event.key == pygame.K_s:     tz = -0.1 #if key s is pressed
-            elif event.key == pygame.K_RIGHT: ry =  1.0 #if right anchor key is pressed
-            elif event.key == pygame.K_LEFT:  ry = -1.0 #if left anchor key is pressed
             elif event.key == pygame.K_UP:    rx = -1.0 #if up anchor key is pressed
             elif event.key == pygame.K_DOWN:  rx =  1.0 #if down anchor key is pressed
-            elif event.key == pygame.K_c:     rz = -1.0 #if c anchor key is pressed
-            elif event.key == pygame.K_x:     rz =  1.0 #if x anchor key is pressed
+            elif event.key == pygame.K_RIGHT: ry =  1.0 #if right anchor key is pressed
+            elif event.key == pygame.K_LEFT:  ry = -1.0 #if left anchor key is pressed
+            elif event.key == pygame.K_c:     rz = -1.0 #if key c is pressed
+            elif event.key == pygame.K_x:     rz =  1.0 #if key x is pressed
 
         #If keyboard key is let go
         elif event.type == pygame.KEYUP:
             if   event.key == pygame.K_a     and tx > 0: tx = 0
             elif event.key == pygame.K_d     and tx < 0: tx = 0
-            elif event.key == pygame.K_q     and ty > 0: ty = 0
-            elif event.key == pygame.K_e     and ty < 0: ty = 0
+            elif event.key == pygame.K_q     and ty < 0: ty = 0
+            elif event.key == pygame.K_e     and ty > 0: ty = 0
             elif event.key == pygame.K_w     and tz > 0: tz = 0
             elif event.key == pygame.K_s     and tz < 0: tz = 0
             elif event.key == pygame.K_RIGHT and ry > 0: ry = 0.0
@@ -150,10 +151,10 @@ while True:
     glPushMatrix()
     glLoadIdentity()
 
-    glTranslatefKw(tx,ty,tz)#translate by tx,ty,tz
-    glRotationfKw(rx,1, 0, 0)
-    glRotationfKw(ry,0, 1, 0)
-    glRotationfKw(rz,0, 0, 1)
+    CameraTranslate(tx,ty,tz) #translate by tx, ty, tz
+    CameraRotation(rx,1, 0, 0)
+    CameraRotation(ry,0, 1, 0)
+    CameraRotation(rz,0, 0, 1)
 
     glMultMatrixf(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)

@@ -60,16 +60,16 @@ def Cube(vertexMatrix): #Draw cube
 def Axis(): #Draw x, y, z axes
     glBegin(GL_LINES)
     glColor3f(1, 0, 0)
-    glVertex3f(-500, 0, 0)
-    glVertex3f(500, 0, 0)
+    glVertex3f(-50, 0, 0)
+    glVertex3f(50, 0, 0)
 
     glColor3f(0, 1, 0)
-    glVertex3f(0, -500, 0)
-    glVertex3f(0, 500, 0)
+    glVertex3f(0, -50, 0)
+    glVertex3f(0, 50, 0)
 
     glColor3f(0, 0, 1)
-    glVertex3f(0, 0, -500)
-    glVertex3f(0, 0, 500)
+    glVertex3f(0, 0, -50)
+    glVertex3f(0, 0, 50)
     glEnd()
 
 def Draw2D(matrix):
@@ -86,14 +86,14 @@ def Draw2D(matrix):
         glVertex3fv(matrix[i % len(matrix)])
     glEnd()
 
-def glTranslatefKw(tx,ty,tz):
+def CameraTranslate(tx,ty,tz):
         matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
         matrix[3,0]+=tx
         matrix[3,1]+=ty
         matrix[3,2]+=tz
         glLoadMatrixf(matrix)
 
-def glRotationfKw(angle,x,y,z):
+def CameraRotation(angle,x,y,z):
         matori = glGetFloatv(GL_MODELVIEW_MATRIX)
         c = cos(radians(angle))
         s = sin(radians(angle))

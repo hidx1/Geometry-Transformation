@@ -1,13 +1,13 @@
 from calculation import *
 
-def windowInput(q,dim,matrix_result): #Thread to switch between pygame window and perintah shell
+def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame window and perintah shell
     while True:
         perintah = input(">>> ").split(" ")
         matrixOri = copy.deepcopy(matrix_result)
         matrix_result = copy.deepcopy(matrix_result)
         if perintah[0] == "translate":
-            dx = float(perintah[1])
-            dy = float(perintah[2])
+            dx = float(perintah[1])/100
+            dy = float(perintah[2])/100
             if dim == 2:
                 dz = 0
             else:
@@ -22,7 +22,11 @@ def windowInput(q,dim,matrix_result): #Thread to switch between pygame window an
             deg = float(perintah[1])
             a = float(perintah[2])
             b = float(perintah[3])
-            matrix_result = rotate(matrix_result, deg, a, b)
+            if dim == 2:
+                c = 0
+            else:
+                c = float(perintah[4])
+            matrix_result = rotate(matrix_result, dim, deg, a, b, c)
 
         elif perintah[0] == "reflect":
             param = perintah[1]
@@ -66,7 +70,7 @@ def windowInput(q,dim,matrix_result): #Thread to switch between pygame window an
 
         elif perintah[0] == "exit":
             sys.exit(0)
+
         for i in range(0,60):
             q.put(differenceCalc(matrixOri,matrix_result,60))
             # q.put(differenceCalc(matrix_result,shear(matrix_result, 3, "x", 2),60))
-
