@@ -28,7 +28,7 @@ def dilate(matrixIn, k):
 def rotate(matrixIn, dim, deg, a, b, c):
     matrix = copy.deepcopy(matrixIn)
     matrix = translate(matrix, a, b, c)
-    transform = numpy.identity(dim + 1)
+    transform = numpy.identity(3)
 
     cos = math.cos(math.radians(float(-deg)))
     sin = math.sin(math.radians(float(-deg)))
@@ -115,7 +115,7 @@ def reflect(matrixIn, dim, param):
 
 def shear(matrixIn, dim, param, k):
     matrix = copy.deepcopy(matrixIn)
-    transform = numpy.identity(dim + 1)
+    transform = numpy.identity(3)
     x = 0
     y = 0
     z = 0
@@ -140,7 +140,7 @@ def shear(matrixIn, dim, param, k):
 
 def stretch(matrixIn, dim, param, k):
     matrix = copy.deepcopy(matrixIn)
-    transform = numpy.identity(dim + 1)
+    transform = numpy.identity(3)
     x = 1
     y = 1
     z = 1
