@@ -2,10 +2,10 @@ import numpy
 import copy
 import math
 
-def ConvertTo2D(matrix):
-    matrix_result = numpy.zeros((len(matrix[:,0]), 2))
+def ConvertTo4D(matrix):
+    matrix_result = numpy.zeros((len(matrix[:,0]), 4))
     for i in range(len(matrix[:,0])):
-        for j in range(2):
+        for j in range(3):
             matrix_result[i][j] = matrix[i][j]
     return matrix_result
 
@@ -31,10 +31,10 @@ def dilate(matrix, k):
 
 def rotate(matrix, dim, deg, a, b, c):
     matrix = translate(matrix, a, b, c)
-    transform = numpy.identity(dim + 1, dtype = float)
+    transform = numpy.identity(dim + 1)
 
-    cos = math.cos(math.radians(float(deg)))
-    sin = math.sin(math.radians(float(deg)))
+    cos = math.cos(math.radians(float(-deg)))
+    sin = math.sin(math.radians(float(-deg)))
 
     if dim == 2: #2D
         transform = numpy.array([[cos, -sin, 0],
@@ -52,18 +52,18 @@ def reflect(matrix, dim, param):
     #rtype : matrix
 
     #mencari titik pantul
-    matrix = copy.deepcopy(matrixIn)
+    #matrix = copy.deepcopy(matrixIn)
     def get(param):
         #fungsi yang mengembalikan pencarian
 
         #mencari index dalam ( ) *cek komentar code di bawah
-        start = target.find("(") + 1
-        stop = target.rfind(")") #rfind == return highest param bleh bleh
+        start = param.find("(") + 1
+        stop = param.rfind(")") #rfind == return highest param bleh bleh
 
         #boolean
         found = (stop - start) >= 1
         if found:
-            output = target[start:stop]
+            output = param[start:stop]
             output = output.split(",")
             return output
         else:
@@ -116,7 +116,7 @@ def reflect(matrix, dim, param):
     return numpy.array(numpy.mat(matrix)*numpy.mat(transform))
 
 def shear(matrix, dim, param, k):
-    not_error = True
+    transform = numpy.identity(dim + 1)
     x = 0
     y = 0
     z = 0
@@ -124,70 +124,71 @@ def shear(matrix, dim, param, k):
         x = k
     elif param == "y":
         y = k
-    elif param == "z":
-        z = k
     else:
-        print("Error, parameter salah")
-        not_error = False
+        z = k
 
-    if not_error:
-        if dim == 2:
-            transform = numpy.array([[1, y, 0],
-                                     [x, 1, 0],
-                                     [0, 0, 1]])
-            return numpy.matmul(matrix, transform)
+    if dim == 2: #2D
+        transform = numpy.array([[1, y, 0],
+                                 [x, 1, 0],
+                                 [0, 0, 1]])
+        matrix = numpy.matmul(matrix, transform)
+    else: #3D
+        transform = numpy.array([[1, y, z, 0],
+                                 [x, 1, z, 0],
+                                 [x, y, 1, 0],
+                                 [0, 0, 0, 1]])
+        matrix = ConvertTo4D(matrix)
+        matrix = numpy.matmul(matrix, transform)
+    return matrix
 
 def stretch(matrix, dim, param, k):
-    if param == "x" or param == "y" or param == "z":
-        if dim == 2:
-            if param == "x":
-                transform = numpy.array([[1,0],
-                                         [k,1]])
-            elif param == "y":
-                transform = numpy.array([[0,1],
-                                         [1,k]])
-            matrix_temp = ConvertTo2D(matrix)
-            matrix_temp = numpy.matmul(matrix_temp, transform)
-            for i in range(len(matrix[:,0])):
-                for j in range(2):
-                    matrix[i][j] = matrix_temp[i][j]
-            return matrix
+    transform = numpy.identity(dim + 1)
+    x = 1
+    y = 1
+    z = 1
+    if param == "x":
+        x = k
+    elif param == "y":
+        y = k
     else:
-        print("Parameter salah")
+        z = k
+
+    if dim == 2: #2D
+        transform = numpy.array([[x, 0, 0],
+                                 [0, y, 0],
+                                 [0, 0, 1]])
+        matrix = numpy.matmul(matrix, transform)
+    else: #3D
+        transform = numpy.array([[x, 0, 0, 0],
+                                 [0, y, 0, 0],
+                                 [0, 0, z, 0],
+                                 [0, 0, 0, 1]])
+        matrix = ConvertTo4D(matrix)
+        matrix = numpy.matmul(matrix, transform)
+    return matrix
 
 def custom(matrix, dim, a, b, c, d, e, f, g, h, i):
     if dim == 2:
-        #Linear transformation for 2D
-        matrix_temp = ConvertTo2D(matrix) #Create temporary N x 2 matrix
-        #Create 2 x 2 transformation matrix
-        transform = numpy.array([[d,b],
-                                 [c,a]])
-        #Matrix multiplication between matrix_temp and transform
-        matrix_temp = numpy.matmul(matrix_temp, transform)
-        #Copy x and y element from N x 2 matrix to N x 4 matrix
-        for i in range(len(matrix[:,0])):
-            for j in range(2):
-                matrix[i][j] = matrix_temp[i][j]
-        return matrix
+        transform = numpy.array([[d,b,0],
+                                 [c,a,0],
+                                 [0,0,1]])
     else:
-        #Linear transformation for 3D
-        #Create 3 x 3 transformation matrix
         transform = numpy.array([[a,d,g],
                                  [b,e,h],
                                  [c,f,i]])
-        return numpy.matmul(matrix, transform)
+    return numpy.matmul(matrix, transform)
 
 def multiple(matrix, dim, n):
     print("Masukkan " + str(n) + " command(s): ")
     for i in range(n):
         command = input("Command " + str(i+1) + ": ").split(" ")
         if command[0] == "translate":
-            dx = float(command[1])
-            dy = float(command[2])
+            dx = float(command[1])/100
+            dy = float(command[2])/100
             if dim == 2:
                 dz = 0
             else:
-                dz = float(command[3])
+                dz = float(command[3])/100
             matrix = translate(matrix,dx,dy,dz)
 
         elif command[0] == "dilate":

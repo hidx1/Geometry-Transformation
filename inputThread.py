@@ -1,4 +1,5 @@
 from calculation import *
+import os
 
 def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame window and perintah shell
     while True:
@@ -11,7 +12,7 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             if dim == 2:
                 dz = 0
             else:
-                dz = float(perintah[3])
+                dz = float(perintah[3])/100
             matrix_result = translate(matrix_result,dx,dy,dz)
 
         elif perintah[0] == "dilate":
@@ -69,7 +70,7 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             matrix_result = copy.deepcopy(matrix)
 
         elif perintah[0] == "exit":
-            sys.exit(0)
+            os._exit(0)
 
         for i in range(0,60):
             q.put(differenceCalc(matrixOri,matrix_result,60))
