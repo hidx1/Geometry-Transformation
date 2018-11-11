@@ -74,12 +74,12 @@ display = (800,600) #Create pygame window with 800 x 600 resolution
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
 glMatrixMode(GL_PROJECTION)
-gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+gluPerspective(45, (display[0]/display[1]), 0.1, 500.0)
 
 view_mat = IdentityMat44()
 glMatrixMode(GL_MODELVIEW)
 glLoadIdentity()
-glTranslatef(0, 0, -15)
+glTranslatefKw(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 

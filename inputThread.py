@@ -66,7 +66,6 @@ def windowInput(q,dim,matrix_result): #Thread to switch between pygame window an
 
         elif perintah[0] == "exit":
             sys.exit(0)
-
         for i in range(0,60):
             q.put(differenceCalc(matrixOri,matrix_result,60))
             # q.put(differenceCalc(matrix_result,shear(matrix_result, 3, "x", 2),60))

@@ -1,7 +1,7 @@
 import numpy
 import copy
 import sys
-
+import math
 def ConvertTo2D(matrix):
     matrix_result = numpy.zeros((len(matrix[:,0]), 2))
     for i in range(len(matrix[:,0])):
@@ -31,33 +31,83 @@ def dilate(matrixIn, factor):
             matrix[i][j] *= k
     return matrix
 
-def rotate(matrix, dim, deg, a, b):
+def rotate(matrixIn, dim, deg, a, b):
+    matrix = copy.deepcopy(matrixIn)
+    c = cos(radians(deg))
+    s = sin(radians(deg))
+    base = numpy.array[[c,-1*s],
+                       [s,c]]
+    matrix = numpy.mat(base)*numpy.mat()
     print("rotate")
 
-def reflect(matrix, dim, param):
-    if dim == 2:
-        matrix_temp = ConvertTo2D(matrix)
-        if param == "x":
-            transform = numpy.array([[1,0],
-                                      [0,-1]])
-        elif param == "y":
-            transform = numpy.array([[-1,0],
-                                      [0,1]])
-        elif param == "y=x":
-            transform = numpy.array([[0,1],
-                                      [1,0]])
-        elif param == "y=-x":
-            transform = numpy.array([[0,-1],
-                                      [-1,0]])
+def reflect(matrixIn, dim, param):
+    #target = titik pantul (string)
+    #dim = dimensi
+    #rtype : matrix
+
+    #mencari titik pantul
+    matrix = copy.deepcopy(matrixIn)
+    def get(param):
+        #fungsi yang mengembalikan pencarian
+
+        #mencari index dalam ( ) *cek komentar code di bawah
+        start = target.find("(") + 1
+        stop = target.rfind(")") #rfind == return highest param bleh bleh
+
+        #boolean
+        found = (stop - start) >= 1
+        if found:
+            output = target[start:stop]
+            output = output.split(",")
+            return output
         else:
-            print("zczcda")
-    elif dim == 3:
-        print("sadas")
-    matrix_temp = numpy.matmul(matrix_temp, transform)
-    for i in range(len(matrix[:,0])):
-        for j in range(2):
-            matrix[i][j] = matrix_temp[i][j]
-    return matrix
+            return []
+
+    if dim == 2: #dimensi 2
+        #mengembalikan matrix transformasi berdasar sumbu pantul
+        if param == "x":
+            transform = numpy.array([[1, 0, 0],
+                                    [0, -1, 0],
+                                    [0, 0, 1]])
+        elif param == "y":
+            transform = numpy.array([[-1, 0 ,0],
+                                    [0, 1, 0],
+                                    [0, 0, 1]])
+        elif param == "y=x":
+            transform = numpy.array([[0, 1, 0],
+                                    [1, 0, 0],
+                                    [0, 0, 1]])
+        elif param == "y=-x":
+            transform = numpy.array([[0, -1, 0],
+                                    [-1, 0, 0],
+                                    [0, 0, 1]])
+        else: #reflect berdasar titik
+            get_point = get(param)
+            get_point = [float(x) for x in get_point]
+            a = float(get_point[0])
+            b = float(get_point[1])
+
+            #rumusnya reflect(x) = 2(poros x) - x
+            #translasi -2(poros x) *(-1)
+            transform = numpy.array([[-1, 0, 2*a],
+                                    [0, -1, 2*b],
+                                    [0, 0, 1]])
+    elif dim == 3: #3D
+        if param == "xy":
+            transform = numpy.array([[1,0,0],
+                                    [0,1,0],
+                                    [0,0,-1]])
+        elif param == "yz":
+            transform = numpy.array([[-1,0,0],
+                                    [0,1,0],
+                                    [0,0,1]])
+        elif param == "xz":
+            transform = numpy.array([[1,0,0],
+                                    [0,-1,0],
+                                    [0,0,1]])
+        
+        # print(numpy.mat(matrix)*numpy.mat(transform))
+    return numpy.array(numpy.mat(matrix)*numpy.mat(transform))
 
 def shear(matrix, dim, param, k):
     not_error = True
