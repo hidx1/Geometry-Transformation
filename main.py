@@ -76,7 +76,7 @@ matrix_result = copy.deepcopy(matrix)
 
 view_mat = IdentityMat44()
 
-# --------------------- Pygame Window ---------------------------------------
+# --------------------- Pygame Window Initialization and glView Initialization ---------------------------------------
 pygame.init() #Initialize pygame window
 pygame.display.set_caption('Transformasi Geometri ' + str(pilihan)) #Set pygame window name
 display = (800,600) #Create pygame window with 800 x 600 resolution
@@ -229,6 +229,7 @@ while True:
     glMultMatrixf(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+
     if pilihan == "2D":
         Draw2D(matrix_result)
     else:
