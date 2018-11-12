@@ -16,7 +16,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 numpy.set_printoptions(suppress=True) #prevent scientific notation
-
+global matrix_result
 global q
 global dim
 q = queue.Queue()
@@ -86,7 +86,7 @@ glTranslatef(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 
-_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result)) #inisialisasi new thread
+_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result,)) #inisialisasi new thread
 
 tx = 0
 ty = 0
@@ -99,7 +99,13 @@ while True:
     #Bagian command
     if not q.empty():
         command = q.get()
-        matrix_result = animasi(matrix_result, command)
+        if command[1]==0:
+            # print("ani")
+            matrix_result = animasi(matrix_result, command[0])
+            
+        else:
+            # print("ani1")
+            matrix_result = command[0]
 
     #Event in pygame window
     events = pygame.event.get()

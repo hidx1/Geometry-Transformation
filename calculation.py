@@ -30,8 +30,8 @@ def rotate(matrixIn, dim, deg, a, b, c, axis):
     matrix = translate(matrix, a, b, c)
     transform = numpy.identity(3)
 
-    cos = math.cos(math.radians(float(-deg)))
-    sin = math.sin(math.radians(float(-deg)))
+    cos = math.cos(math.radians(numpy.float64(-deg)))
+    sin = math.sin(math.radians(numpy.float64(-deg)))
 
     if dim == 2: #2D
         transform = numpy.array([[cos, -sin, 0],

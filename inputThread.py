@@ -6,6 +6,7 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
         perintah = input(">>> ").split(" ")
         matrixOri = copy.deepcopy(matrix_result)
         matrix_result = copy.deepcopy(matrix_result)
+        matrix_result = numpy.array(matrix_result,dtype=numpy.float64)
         if perintah[0] == "translate":
             dx = float(perintah[1])/100
             dy = float(perintah[2])/100
@@ -16,11 +17,11 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             matrix_result = translate(matrix_result,dx,dy,dz)
 
         elif perintah[0] == "dilate":
-            k = float(perintah[1])
+            k = float(perintah[1])  
             matrix_result = dilate(matrix_result, k)
 
         elif perintah[0] == "rotate":
-            deg = float(perintah[1])
+            deg = numpy.float64(perintah[1])
             a = float(perintah[2])
             b = float(perintah[3])
             if dim == 2:
@@ -29,7 +30,12 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             else:
                 c = float(perintah[4])
                 axis = perintah[5]
-            matrix_result = rotate(matrix_result, dim, deg, a, b, c, axis)
+            for i in range(0,60):
+                matrix_result = rotate(matrix_result, dim, numpy.float64(deg/60), a, b, c, axis)
+                data=[]
+                data.append(matrix_result)
+                data.append(1)
+                q.put(data)
 
         elif perintah[0] == "reflect":
             param = perintah[1]
@@ -74,6 +80,10 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
         elif perintah[0] == "exit":
             os._exit(0)
 
-        for i in range(0,60):
-            q.put(differenceCalc(matrixOri,matrix_result,60))
-            # q.put(differenceCalc(matrix_result,shear(matrix_result, 3, "x", 2),60))
+        if perintah[0] != "rotate":
+            for i in range(0,60):  
+                data=[]
+                data.append(differenceCalc(matrixOri,matrix_result,60))
+                data.append(0)
+                q.put(data)
+        matrixOri=matrix_result
