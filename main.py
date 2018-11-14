@@ -8,6 +8,7 @@ import sys
 import time
 import queue
 import math
+import os
 from calculation import *
 from pygame.locals import *
 from draw import *
@@ -29,6 +30,8 @@ def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
         matrix[i][1] /= 100
 
 # --------------------- INTERFACE AWAL ---------------------------------------
+os.system('cls')  # Clear screen for Windows
+#os.system('clear') #Clear screen for Linux/OS X
 bintang = "***************************************************\n"
 welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
 msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
@@ -43,13 +46,16 @@ typing(bintang)
 print(msg)
 
 #Choose between 2D/3D
-pilihan = input("Mode yang ingin dijalankan (2D/3D): ")
-while(not pilihan == "2D" and not pilihan == "3D"):
-    pilihan = input("Input salah. Pilih antara 2D/3D: ")
+print("Mode yang ingin dijalankan: ")
+print("1. 2D Dimensi")
+print("2. 3D Dimensi")
+pilihan = int(input("Pilihan: "))
+while(not pilihan == 1 and not pilihan == 2):
+    pilihan = int(input("Input salah. Pilih antara 2D/3D: "))
 print()
 
 #Ask and create matrix based on user's input if choice is 2D
-if(pilihan == "2D"):
+if(pilihan == 1):
     dim = 2
     pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
     matrix = numpy.zeros((pasangan_point, 3)) #Bentuk matrix 3 * pasangan_point
@@ -77,8 +83,8 @@ display = (800,600) #Create pygame window with 800 x 600 resolution
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
 glMatrixMode(GL_PROJECTION)
-gluPerspective(45, (display[0]/display[1]), 0.1, 500.0)
 
+gluPerspective(45, (display[0]/display[1]), 0.1, 500.0)
 view_mat = IdentityMat44()
 glMatrixMode(GL_MODELVIEW)
 glLoadIdentity()
@@ -99,12 +105,9 @@ while True:
     #Bagian command
     if not q.empty():
         command = q.get()
-        if command[1]==0:
-            # print("ani")
+        if command[1] == 0:
             matrix_result = animasi(matrix_result, command[0])
-            
         else:
-            # print("ani1")
             matrix_result = command[0]
 
     #Event in pygame window
@@ -168,7 +171,7 @@ while True:
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-    if pilihan == "2D":
+    if dim == 2:
         Draw2D(matrix_result)
     else:
         Cube(matrix_result)

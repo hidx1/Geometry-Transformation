@@ -6,7 +6,7 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
         perintah = input(">>> ").split(" ")
         matrixOri = copy.deepcopy(matrix_result)
         matrix_result = copy.deepcopy(matrix_result)
-        matrix_result = numpy.array(matrix_result,dtype=numpy.float64)
+        matrix_result = numpy.array(matrix_result, dtype = numpy.float64)
         if perintah[0] == "translate":
             dx = float(perintah[1])/100
             dy = float(perintah[2])/100
@@ -17,7 +17,7 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             matrix_result = translate(matrix_result,dx,dy,dz)
 
         elif perintah[0] == "dilate":
-            k = float(perintah[1])  
+            k = float(perintah[1])
             matrix_result = dilate(matrix_result, k)
 
         elif perintah[0] == "rotate":
@@ -32,7 +32,7 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
                 axis = perintah[5]
             for i in range(0,60):
                 matrix_result = rotate(matrix_result, dim, numpy.float64(deg/60), a, b, c, axis)
-                data=[]
+                data = []
                 data.append(matrix_result)
                 data.append(1)
                 q.put(data)
@@ -44,7 +44,11 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
         elif perintah[0] == "shear":
             param = perintah[1]
             k = float(perintah[2])
-            matrix_result = shear(matrix_result, dim, param, k)
+            if dim == 3:
+                l = float(perintah[3])
+            else:
+                l = 0
+            matrix_result = shear(matrix_result, dim, param, k, l)
 
         elif perintah[0] == "stretch":
             param = perintah[1]
@@ -81,9 +85,9 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
             os._exit(0)
 
         if perintah[0] != "rotate":
-            for i in range(0,60):  
-                data=[]
-                data.append(differenceCalc(matrixOri,matrix_result,60))
+            for i in range(0,60):
+                data = []
+                data.append(differenceCalc(matrixOri, matrix_result, 60))
                 data.append(0)
                 q.put(data)
-        matrixOri=matrix_result
+        matrixOri = matrix_result

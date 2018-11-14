@@ -125,18 +125,30 @@ def reflect(matrixIn, dim, param):
         # print(numpy.mat(matrix)*numpy.mat(transform))
     return numpy.array(numpy.mat(matrix)*numpy.mat(transform))
 
-def shear(matrixIn, dim, param, k):
+def shear(matrixIn, dim, param, k, l):
     matrix = copy.deepcopy(matrixIn)
     transform = numpy.identity(3)
     x = 0
     y = 0
     z = 0
     if param == "x":
-        x = k
+        if dim == 2:
+            x = k
+        else:
+            y = k
+            z = l
     elif param == "y":
-        y = k
+        if dim == 2:
+            y = k
+        else:
+            x = k
+            z = l
     else:
-        z = k
+        if dim == 2:
+            z = k
+        else:
+            x = k
+            y = l
 
     if dim == 2: #2D
         transform = numpy.array([[1, y, 0],
@@ -223,11 +235,16 @@ def multiple(matrixIn, dim, n):
         elif command[0] == "shear":
             param = command[1]
             k = float(command[2])
-            matrix = shear(matrix, dim, param, k)
+            if dim == 3:
+                l = float(command[3])
+            else:
+                l = 0
+            matrix = shear(matrix, dim, param, k, l)
 
         elif command[0] == "stretch":
             param = command[1]
             k = float(command[2])
+
             matrix = stretch(matrix, dim, param, k)
 
         elif command[0] == "custom":
