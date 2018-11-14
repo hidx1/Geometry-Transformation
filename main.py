@@ -57,7 +57,7 @@ print()
 #Ask and create matrix based on user's input if choice is 2D
 if(pilihan == 1):
     dim = 2
-    pasangan_point = int(input("Masukkan jumlah pasangan/tuple point: "))
+    pasangan_point = int(input("Masukkan jumlah pasangan point: "))
     matrix = numpy.zeros((pasangan_point, 3)) #Bentuk matrix 3 * pasangan_point
     CreateVertexMatrix(pasangan_point, matrix)
     print()
