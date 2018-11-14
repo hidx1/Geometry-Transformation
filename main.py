@@ -78,7 +78,7 @@ view_mat = IdentityMat44()
 
 # --------------------- Pygame Window and glView Initialization ----------------
 pygame.init() #Initialize pygame window
-pygame.display.set_caption('Transformasi Geometri ' + str(pilihan)) #Set pygame window name
+pygame.display.set_caption('Transformasi Geometri ' + str(dim) + 'D') #Set pygame window name
 display = (800,600) #Create pygame window with 800 x 600 resolution
 screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
