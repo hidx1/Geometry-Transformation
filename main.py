@@ -32,6 +32,40 @@ def CreateVertexMatrix(pasangan_point, matrix): #Fill matrix with user's input
 # --------------------- INTERFACE AWAL ---------------------------------------
 os.system('cls')  # Clear screen for Windows
 #os.system('clear') #Clear screen for Linux/OS X
+print("  ______           ____________   _________      _____  ___________          _____         __________")
+time.sleep(0.075)
+print("  |    |           |          |   |        \\     |   |  |         |         /     \\        |    ____ \\")
+time.sleep(0.075)
+print("  |    |           |__      __|   |   ___   \\    |   |  |   ______|        /   _   \\       |   |    \\ \\")
+time.sleep(0.075)
+print("  |    |              |    |      |   | \\    \\   |   |  |   |_____        /   / \\   \\      |   |____/ /")
+time.sleep(0.075)
+print("  |    |              |    |      |   |  \\    \\  |   |  |         |      /   /___\\   \\     |         /")
+time.sleep(0.075)
+print("  |    |              |    |      |   |   \\    \\ |   |  |   ______|     /    _____    \\    |   |\\   \\")
+time.sleep(0.075)
+print("  |    |________   ___|    |___   |   |    \\    \\|   |  |   |_____     /    /     \\    \\   |   | \\   \\")
+time.sleep(0.075)
+print("  |             |  |          |   |   |     \\        |  |         |   /    /       \\    \\  |   |  \\   \\")
+time.sleep(0.075)
+print("  |_____________|  |__________|   |___|      \\_______|  |_________|  /____/         \\____\\ |___|   \\___\\")
+time.sleep(0.075)
+print()
+time.sleep(0.075)
+print("   _______  ______         __       __    _       _______ ______   ___  ______   ___    ___      __    _______   ___  ______    ")
+time.sleep(0.075)
+print("  |__   __| |     \\       /  \\     |  \\  | |     /  ____/ |  __|  / _ \\ |     \\  |  \\  /  |     /  \\  |__   __| / _ \\ |     \\    ")
+time.sleep(0.075)
+print("     | |    |     /      /    \\    |   \\ | |    /  /      |  |_  | | | ||     /  |   \\/   |    /    \\    | |   | | | ||     /    ")
+time.sleep(0.075)
+print("     | |    | |\\  \\     /  __  \\   | |\\ \\| |    \\  \\      |  __| | | | || |\\  \\  | |\\  /| |   /  __  \\   | |   | | | || |\\  \\      ")
+time.sleep(0.075)
+print("     | |    | | \\  \\   /  /  \\  \\  | | \\   |  ___\\  \\     |  |   | |_| || | \\  \\ | | \\/ | |  /  /  \\  \\  | |   | |_| || | \\  \\       ")
+time.sleep(0.075)
+print("     |_|    |_|  \\__\\ /__/    \\__\\ |_|  \\__| /______/     |__|    \\___/ |_|  \\__\\|_|    |_| /__/    \\__\\ |_|    \\___/ |_|  \\__\\      ")
+time.sleep(1)
+os.system('cls')  # Clear screen for Windows
+#os.system('clear') #Clear screen for Linux/OS X
 bintang = "***************************************************\n"
 welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
 msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
@@ -163,9 +197,9 @@ while True:
     glLoadIdentity()
 
     CameraTranslate(tx,ty,tz) #translate by tx, ty, tz
-    CameraRotation(rx,1, 0, 0)
-    CameraRotation(ry,0, 1, 0)
-    CameraRotation(rz,0, 0, 1)
+    CameraRotation(rx, 1, 0, 0)
+    CameraRotation(ry, 0, 1, 0)
+    CameraRotation(rz, 0, 0, 1)
 
     glMultMatrixf(view_mat)
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
