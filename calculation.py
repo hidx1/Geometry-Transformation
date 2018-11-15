@@ -218,13 +218,13 @@ def multiple(matrixIn, dim, n):
 
         elif command[0] == "rotate":
             deg = float(command[1])
-            a = float(command[2])
-            b = float(command[3])
+            a = float(command[2])/100
+            b = float(command[3])/100
             if dim == 2:
                 c = 0
                 axis = ""
             else:
-                c = float(command[4])
+                c = float(command[4])/100
                 axis = command[5]
             matrix = rotate(matrix, dim, deg, a, b, c, axis)
 
