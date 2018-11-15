@@ -2,7 +2,7 @@ import numpy
 import copy
 import math
 
-def animasi(matrixIn, matrixAnimasi):
+def animasi(matrixIn, matrixAnimasi): #function to animate object
     matrix = copy.deepcopy(matrixIn)
     for i in range(0,len(matrix[:,0])):
         matrix[i][0] += matrixAnimasi[i][0]
@@ -10,34 +10,34 @@ def animasi(matrixIn, matrixAnimasi):
         matrix[i][2] += matrixAnimasi[i][2]
     return matrix
 
-def translate(matrixIn, dx, dy, dz):
+def translate(matrixIn, dx, dy, dz): #function to translate object
     matrix = copy.deepcopy(matrixIn)
     for i in range(len(matrix[:,0])):
-        matrix[i][0] += dx
-        matrix[i][1] += dy
-        matrix[i][2] += dz
+        matrix[i][0] += dx #element in x axis plus dx
+        matrix[i][1] += dy #elemnt in y axis plus dy
+        matrix[i][2] += dz #element in z axis plus dz
     return matrix
 
-def dilate(matrixIn, k):
+def dilate(matrixIn, k): #function to dilate object
     matrix = copy.deepcopy(matrixIn)
     for i in range(len(matrix[:,0])):
         for j in range(3):
-            matrix[i][j] *= k
+            matrix[i][j] *= k #each element times k
     return matrix
 
-def rotate(matrixIn, dim, deg, a, b, c, axis):
+def rotate(matrixIn, dim, deg, a, b, c, axis): #function to rotate object
     matrix = copy.deepcopy(matrixIn)
-    matrix = translate(matrix, a, b, c)
-    transform = numpy.identity(3)
+    matrix = translate(matrix, a, b, c) #translate object with point a,b,c
+    transform = numpy.identity(3) #create 3x3 identity matrix
 
     cos = math.cos(math.radians(numpy.float64(-deg)))
     sin = math.sin(math.radians(numpy.float64(-deg)))
 
-    if dim == 2: #2D
+    if dim == 2: #Matrix transformation for 2D
         transform = numpy.array([[cos, -sin, 0],
                                  [sin, cos, 0],
                                  [0, 0, 1]])
-    else:
+    else: #Matrix transformation for 3D
         if axis == "x":
             transform = numpy.array([[1, 0, 0],
                                     [0, cos, -sin],
@@ -50,19 +50,15 @@ def rotate(matrixIn, dim, deg, a, b, c, axis):
             transform = numpy.array([[cos, -sin, 0],
                                     [sin, cos, 0],
                                     [0, 0, 1]])
-    matrix = numpy.matmul(matrix, transform)
-    matrix = translate(matrix, -a, -b, c)
+    matrix = numpy.matmul(matrix, transform) #multiplication between input matrix and transformation matrix
+    matrix = translate(matrix, -a, -b, c) #translate object back with point -a,-b,-c
     return matrix
 
-def reflect(matrixIn, dim, param):
+def reflect(matrixIn, dim, param): #function to reflect object
     matrix = copy.deepcopy(matrixIn)
     param = param.lower()
-    #target = titik pantul (string)
-    #dim = dimensi
-    #rtype : matrix
 
     #mencari titik pantul
-    #matrix = copy.deepcopy(matrixIn)
     def get(param):
         #fungsi yang mengembalikan pencarian
 
@@ -79,7 +75,7 @@ def reflect(matrixIn, dim, param):
         else:
             return []
 
-    if dim == 2: #dimensi 2
+    if dim == 2: #Matrix transformation for 2D
         #mengembalikan matrix transformasi berdasar sumbu pantul
         if param == "x":
             transform = numpy.array([[1, 0, 0],
@@ -108,7 +104,8 @@ def reflect(matrixIn, dim, param):
             transform = numpy.array([[-1, 0, 2*a],
                                     [0, -1, 2*b],
                                     [0, 0, 1]])
-    elif dim == 3: #3D
+
+    elif dim == 3: #Matrix transformation for 3D
         if param in ("xy","yx") :
             transform = numpy.array([[1,0,0],
                                     [0,1,0],
@@ -122,49 +119,48 @@ def reflect(matrixIn, dim, param):
                                     [0,-1,0],
                                     [0,0,1]])
 
-        # print(numpy.mat(matrix)*numpy.mat(transform))
     return numpy.array(numpy.mat(matrix)*numpy.mat(transform))
 
-def shear(matrixIn, dim, param, k, l):
+def shear(matrixIn, dim, param, k, l): #function to shear object
     matrix = copy.deepcopy(matrixIn)
-    transform = numpy.identity(3)
+    transform = numpy.identity(3) #create 3x3 identity matrix
     x = 0
     y = 0
     z = 0
     if param == "x":
         if dim == 2:
             x = k
-        else:
+        else: #if 3D, x is the unsheared axis
             y = k
             z = l
     elif param == "y":
         if dim == 2:
             y = k
-        else:
+        else: #if 3D, y is the unsheared axis
             x = k
             z = l
     else:
         if dim == 2:
             z = k
-        else:
+        else: #if 3D, z is the unsheared axis
             x = k
             y = l
 
-    if dim == 2: #2D
+    if dim == 2: #Matrix transformation for 2D
         transform = numpy.array([[1, y, 0],
                                  [x, 1, 0],
                                  [0, 0, 1]])
         matrix = numpy.matmul(matrix, transform)
-    else: #3D
+    else: #Matrix transformation for 3D
         transform = numpy.array([[1, y, z],
                                  [x, 1, z],
                                  [x, y, 1]])
-    matrix = numpy.matmul(matrix, transform)
+    matrix = numpy.matmul(matrix, transform) #multiplication between input matrix and transformation matrix
     return matrix
 
-def stretch(matrixIn, dim, param, k):
+def stretch(matrixIn, dim, param, k): #function to stretch object
     matrix = copy.deepcopy(matrixIn)
-    transform = numpy.identity(3)
+    transform = numpy.identity(3) #create 3x3 identity matrix
     x = 1
     y = 1
     z = 1
@@ -175,33 +171,33 @@ def stretch(matrixIn, dim, param, k):
     else:
         z = k
 
-    if dim == 2: #2D
+    if dim == 2: #Matrix transformation for 2D
         transform = numpy.array([[x, 0, 0],
                                  [0, y, 0],
                                  [0, 0, 1]])
-    else: #3D
+    else: #Matrix transformation for 3D
         transform = numpy.array([[x, 0, 0],
                                  [0, y, 0],
                                  [0, 0, z]])
-    matrix = numpy.matmul(matrix, transform)
+    matrix = numpy.matmul(matrix, transform) #multiplication between input matrix and transformation matrix
     return matrix
 
-def custom(matrixIn, dim, a, b, c, d, e, f, g, h, i):
+def custom(matrixIn, dim, a, b, c, d, e, f, g, h, i): #function for custom linear transformation of object
     matrix = copy.deepcopy(matrixIn)
-    if dim == 2:
+    if dim == 2: #Matrix transformation for 2D
         transform = numpy.array([[d,b,0],
                                  [c,a,0],
                                  [0,0,1]])
-    else:
+    else: #Matrix transformation for 3D
         transform = numpy.array([[a,d,g],
                                  [b,e,h],
                                  [c,f,i]])
-    return numpy.matmul(matrix, transform)
+    return numpy.matmul(matrix, transform) #multiplication between input matrix and transformation matrix
 
-def multiple(matrixIn, dim, n):
+def multiple(matrixIn, dim, n): #function to do multiple linear transformation at once
     matrix = copy.deepcopy(matrixIn)
     print("Masukkan " + str(n) + " command(s): ")
-    for i in range(n):
+    for i in range(n): #Loop N times
         command = input("Command " + str(i+1) + ": ").split(" ")
         if command[0] == "translate":
             dx = float(command[1])/100

@@ -1,5 +1,5 @@
 import contextlib
-with contextlib.redirect_stdout(None):
+with contextlib.redirect_stdout(None): #prevent welcome message from pygame
     import pygame
 import numpy
 import copy
@@ -92,12 +92,12 @@ print()
 if(pilihan == 1):
     dim = 2
     pasangan_point = int(input("Masukkan jumlah pasangan point: "))
-    matrix = numpy.zeros((pasangan_point, 3)) #Bentuk matrix 3 * pasangan_point
-    CreateVertexMatrix(pasangan_point, matrix)
+    matrix = numpy.zeros((pasangan_point, 3))
+    CreateVertexMatrix(pasangan_point, matrix) #Bentuk matrix sebesar pasangan_point * 3
     print()
 else:
     dim = 3
-    matrix = numpy.array([[1.0, -1.0, -1.0],
+    matrix = numpy.array([[1.0, -1.0, -1.0], #matrix for cube
                            [1.0, 1.0, -1.0],
                            [-1.0, 1.0, -1.0],
                            [-1.0, -1.0, -1.0],
@@ -126,7 +126,7 @@ glTranslatef(0, 0, -15)
 glGetFloatv(GL_MODELVIEW_MATRIX, view_mat) #ngisi view_mat dengan matrix di stack modelview
 glLoadIdentity()
 
-_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result,)) #inisialisasi new thread
+_thread.start_new_thread(windowInput,(q,dim,matrix,matrix_result,)) #New thread Initialization
 
 tx = 0
 ty = 0
@@ -140,7 +140,7 @@ while True:
     if not q.empty():
         command = q.get()
         if command[1] == 0:
-            matrix_result = animasi(matrix_result, command[0])
+            matrix_result = animasi(matrix_result, command[0]) #animate the object
         else:
             matrix_result = command[0]
 
@@ -154,11 +154,11 @@ while True:
 
         #If keyboard key is pressed down
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE: #press esc to exit program
                 pygame.quit()
                 quit()
 
-            if   event.key == pygame.K_p:
+            if   event.key == pygame.K_p: #press p key to print current matrix
                 print("Printing matrix...")
                 print(matrix_result)
                 print()
@@ -196,8 +196,9 @@ while True:
     glPushMatrix()
     glLoadIdentity()
 
+    #Camera manipulation
     CameraTranslate(tx,ty,tz) #translate by tx, ty, tz
-    CameraRotation(rx, 1, 0, 0)
+    CameraRotation(rx, 1, 0, 0) #rotate camera
     CameraRotation(ry, 0, 1, 0)
     CameraRotation(rz, 0, 0, 1)
 
@@ -205,11 +206,11 @@ while True:
     glGetFloatv(GL_MODELVIEW_MATRIX, view_mat)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-    if dim == 2:
+    if dim == 2: #if 2D, draw 2D object
         Draw2D(matrix_result)
-    else:
+    else: #if 3D, draw cube
         Cube(matrix_result)
-    Axis(dim)
+    Axis(dim) #draw axis based on object's dimension
     glPopMatrix()
 
     pygame.display.flip()

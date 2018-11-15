@@ -2,6 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from math import *
 import numpy
+
+#Color for Cube
 warnaCube = (
     (1,0,0),
     (0,1,0),
@@ -17,6 +19,7 @@ warnaCube = (
     (0,1,1),
     )
 
+#Edges of Cube
 edges = (
     (0,1),
     (0,3),
@@ -32,6 +35,7 @@ edges = (
     (5,7)
     )
 
+#Surface definition for Cube
 surfacesCube = (
     (0,1,2,3),
     (3,2,7,6),
@@ -68,18 +72,17 @@ def Axis(dim): #Draw x, y, z axes
     glVertex3f(0, 500, 0)
     glEnd()
 
-    if dim==3:
+    if dim == 3: #if 3D draw z axis
         glBegin(GL_LINES)
         glColor3f(0, 0, 1)
         glVertex3f(0, 0, -500)
         glVertex3f(0, 0, 500)
         glEnd()
 
-def Draw2D(matrix):
+def Draw2D(matrix): #Draw 2D object
     glBegin(GL_LINES)
     glColor3f(1, 1, 1)
     for i in range(0,len(matrix)):
-        #print(matrix[i % len(matrix)])
         glVertex3fv(matrix[i % len(matrix)])
         glVertex3fv(matrix[(i+1) % len(matrix)])
     glEnd()
@@ -89,14 +92,14 @@ def Draw2D(matrix):
         glVertex3fv(matrix[i % len(matrix)])
     glEnd()
 
-def CameraTranslate(tx,ty,tz):
+def CameraTranslate(tx,ty,tz): #Translate OpenGL camera
         matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
         matrix[3,0]+=tx
         matrix[3,1]+=ty
         matrix[3,2]+=tz
         glLoadMatrixf(matrix)
 
-def CameraRotation(angle,x,y,z):
+def CameraRotation(angle,x,y,z): #Rotate OpenGL camera
         matori = glGetFloatv(GL_MODELVIEW_MATRIX)
         c = cos(radians(angle))
         s = sin(radians(angle))
