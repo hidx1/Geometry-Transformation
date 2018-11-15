@@ -22,13 +22,13 @@ def windowInput(q,dim,matrix,matrix_result): #Thread to switch between pygame wi
 
         elif perintah[0] == "rotate":
             deg = numpy.float64(perintah[1])
-            a = float(perintah[2])
-            b = float(perintah[3])
+            a = float(perintah[2])/100
+            b = float(perintah[3])/100
             if dim == 2:
                 c = 0
                 axis = ""
             else:
-                c = float(perintah[4])
+                c = float(perintah[4])/100
                 axis = perintah[5]
             for i in range(0,60):
                 matrix_result = rotate(matrix_result, dim, numpy.float64(deg/60), a, b, c, axis)
