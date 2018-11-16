@@ -64,7 +64,7 @@ os.system('cls')  # Clear screen for Windows
 #os.system('clear') #Clear screen for Linux/OS X
 bintang = "***************************************************\n"
 welcome = "**Selamat Datang di Program Transformasi Geometri**\n"
-msg = "Program ini digunakan untuk visualisasi transformasi\ngeometri terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
+msg = "Program ini digunakan untuk visualisasi transformasi\nlinier terhadap objek 2D/3D. Untuk memulai\nprogram, pilih mode yang ingin dijalankan.\n"
 def typing(str): #Simulated typing
     for letter in str:
         sys.stdout.write(letter)
