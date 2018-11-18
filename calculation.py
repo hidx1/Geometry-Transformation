@@ -96,8 +96,8 @@ def reflect(matrixIn, dim, param): #function to reflect object
         else: #reflect berdasar titik
             get_point = get(param)
             get_point = [float(x) for x in get_point]
-            a = float(get_point[0])
-            b = float(get_point[1])
+            a = float(get_point[0])/100
+            b = float(get_point[1])/100
 
             #rumusnya reflect(x) = 2(poros x) - x
             #translasi -2(poros x) *(-1)
